@@ -1,34 +1,48 @@
-
-/**
- * Example of extending an qooxdoo class
- */
-class MyPage extends qx.ui.tabview.Page {
-    constructor(name: string) {
-        super(name)
-        this.setLayout(new qx.ui.layout.Canvas())
-        this.setShowCloseButton(true)
-    }
-}
-
-/**
- * This is the main function that will be called from the qooxdoo application to start everything.
- */
 function qooxdooMain(app: qx.application.Standalone) {
+  const root = <qx.ui.container.Composite>app.getRoot();
+  type AppLayoutMode = "login" | "main";
 
-    const t = new qx.ui.tabview.TabView();
-    t.add(new ButtonsPage())
-    t.add(new FormPage())
-    t.add(new TablePage())
-    t.add(createTree()) // example using function instead of class
-    t.add(new ToolBarPage())
-    t.add(new WindowsPage())
-    t.add(new ControlPage())
+  const createMainLayout = () => {
+    // Filter pages by the logged-in user's role
+    const pageMap = new Map<string, () => qx.ui.core.Widget>();
+    PAGE_DEFINITIONS.forEach((definition) => {
+      if (!definition.element) return;
+      pageMap.set(definition.label, definition.element);
+    });
 
+    const sidebarItems = manipulateSidebarItems(createSidebarItems(), pageMap);
+    const initialPage = new MainPage();
+    const initialTitle = "Welcome";
 
-    // add the tabview to the root
-    const root = <qx.ui.container.Composite>app.getRoot()
-    root.add(t, { edge: 0 })
+    const mainLayout = new MainLayout(
+      initialPage,
+      sidebarItems,
+      pageMap,
+      initialTitle,
+    );
+    mainLayout.addListener("logout", () => {
+      setAppLayout("login");
+    });
+    return mainLayout;
+  };
+
+  const createLoginLayout = () => {
+    const loginLayout = new LoginLayout();
+    loginLayout.addListener("login", () => {
+      setAppLayout("main");
+    });
+    return loginLayout;
+  };
+
+  const setAppLayout = (mode: AppLayoutMode): void => {
+    root.removeAll();
+    root.add(mode === "main" ? createMainLayout() : createLoginLayout(), {
+      edge: 0,
+    });
+  };
+
+  const currentLayout: AppLayoutMode = "main"; // TODO: replace with actual authentication check
+  setAppLayout(currentLayout);
 }
 
-// register the main function
-qx.registry.registerMainMethod(qooxdooMain)
+qx.registry.registerMainMethod(qooxdooMain);

@@ -1,3 +1,5 @@
+= NOTE: This project is a fork of https://github.com/jbaron/qx-typed. All credit for the original work goes to the upstream author. See the original repository for source, documentation, and updates.
+
 = QX Typed
 :icons: font
 

@@ -1,16 +1,39 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-  <title></title>
-  
-  <!-- Make sure the qooxdoo script is included before your own application code -->
-  <script type="text/javascript" src="resource/qooxdoo.js"></script>
-</head>
-<body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>QX-Typed App</title>
 
-<!-- Now include your own application code -->
-<script type="text/javascript" src="lib/application.js"></script>
-</body>
+    <!-- AMD Loader (provides global `define` and `require`) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <!-- Basecoat UI -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js"
+      defer
+    ></script>
+
+    <!-- PWA -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Make sure the qooxdoo script is included before your own application code -->
+    <script type="text/javascript" src="resource/qooxdoo.js"></script>
+  </head>
+  <body>
+    <!-- Now include your own application code via RequireJS -->
+    <script src="lib/application.js"></script>
+    <div id="toaster"></div>
+  </body>
 </html>
