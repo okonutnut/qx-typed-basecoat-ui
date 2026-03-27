@@ -19,6 +19,11 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
     element: () => new ButtonsPage(),
   },
   {
+    label: "Button",
+    iconName: "mouse-pointer",
+    element: () => new ButtonPage(),
+  },
+  {
     label: "Controls",
     iconName: "users",
     element: () => new ControlPage(),
@@ -43,11 +48,31 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
     iconName: "circle",
     element: () => new WindowsPage(),
   },
+  {
+    label: "Card",
+    iconName: "credit-card",
+    element: () => new CardPage(),
+  },
+  {
+    label: "Input",
+    iconName: "edit",
+    element: () => new InputPage(),
+  },
+  {
+    label: "Select",
+    iconName: "chevron-down",
+    element: () => new SelectPage(),
+  },
+  {
+    label: "Textarea",
+    iconName: "align-left",
+    element: () => new TextareaPage(),
+  },
 ];
 
 const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
   {
-    label: "Items",
+    label: "Qooxdoo UI",
     iconName: "graduation-cap",
     children: [
       {
@@ -61,6 +86,33 @@ const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
       {
         label: "Forms",
         iconName: "door-open",
+        disabled: true,
+      },
+    ],
+  },
+  {
+    label: "Basecoat UI",
+    iconName: "box",
+    children: [
+      {
+        label: "Button",
+        iconName: "mouse-pointer",
+      },
+      {
+        label: "Card",
+        iconName: "credit-card",
+      },
+      {
+        label: "Input",
+        iconName: "edit",
+      },
+      {
+        label: "Select",
+        iconName: "chevron-down",
+      },
+      {
+        label: "Textarea",
+        iconName: "align-left",
       },
     ],
   },

@@ -79,10 +79,7 @@ class Navbar extends qx.ui.container.Composite {
     const actionsMenu = new qx.ui.container.Composite(new qx.ui.layout.VBox(0));
     actionsMenu.set({
       minWidth: 160,
-      paddingTop: 6,
-      paddingRight: 6,
-      paddingBottom: 6,
-      paddingLeft: 6,
+      padding: 2,
       backgroundColor: AppColors.background(),
       textColor: AppColors.foreground(),
     });

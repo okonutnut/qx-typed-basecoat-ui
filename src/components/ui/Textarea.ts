@@ -21,6 +21,7 @@ class BsTextarea extends qx.ui.basic.Atom {
 
     this._setLayout(new qx.ui.layout.Grow());
     this.setAllowGrowX(true);
+    this.setAllowGrowY(true);
     this.setFocusable(true);
 
     this.__value = value ?? "";
@@ -30,9 +31,11 @@ class BsTextarea extends qx.ui.basic.Atom {
 
     this.__htmlTextarea = new qx.ui.embed.Html("");
     this.__htmlTextarea.setAllowGrowX(true);
+    this.__htmlTextarea.setAllowGrowY(true);
 
     this.__render();
     this._add(this.__htmlTextarea);
+    this.setMinHeight(110);
 
     this.__htmlTextarea.addListenerOnce("appear", () => {
       this.__bindNativeTextarea();
@@ -87,6 +90,7 @@ class BsTextarea extends qx.ui.basic.Atom {
     const value = this.__escapeAttr(this.__value);
     const placeholder = this.__escapeAttr(this.__placeholder);
     const tabIndexAttr = 'tabindex="-1"';
+    const rowsStyle = `min-height: ${this.__rows * 24}px;`;
 
     this.__htmlTextarea.setHtml(`
       <div class="p-1">
@@ -94,6 +98,7 @@ class BsTextarea extends qx.ui.basic.Atom {
           class="${classes}"
           placeholder="${placeholder}"
           rows="${this.__rows}"
+          style="${rowsStyle}"
           ${tabIndexAttr}
         >${value}</textarea>
       </div>

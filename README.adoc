@@ -33,13 +33,24 @@ tsc
 
 Or this 
 ----
-npx tsc watch --preserveWatchOutput
+npx tsc -watch --preserveWatchOutput
 ----
 
 for live editing.
 
 You can also use Live Server VSCode extention to serve this in realtime during dev mode.
 
+== Sidebar Configuration
+
+Sidebar items require a corresponding page in `PAGE_DEFINITIONS` to render. The `manipulateSidebarItems` function filters out any leaf item that doesn't have a matching page.
+
+To add a new item to the sidebar, you must add both:
+1. A page definition in `PAGE_DEFINITIONS` with `label`, `iconName`, and `element`
+2. A sidebar item in `SIDEBAR_DEFINITIONS` with matching `label`
+
+Sidebar items support the following optional properties:
+- `disabled?: boolean` - Disables the item, making it non-clickable
+- `hidden?: boolean` - Hides the item from the sidebar entirely
 
 == License
 This application uses much of qooxdoo and for those part the same license applies as qooxdoo. So either LGPL or EPL.

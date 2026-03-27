@@ -54,6 +54,7 @@ class BsButton extends qx.ui.basic.Atom {
 
     this.addListener("focusin", () => this.__buttonEl?.focus());
     this.addListener("changeTabIndex", () => this.__syncTabIndex());
+    this.addListener("changeEnabled", () => this.__syncDisabled());
 
     if (icon) {
       icon.addListener("changeHtml", () => {
@@ -70,11 +71,30 @@ class BsButton extends qx.ui.basic.Atom {
     if (!this.__buttonEl) return;
 
     this.__syncTabIndex();
+    this.__syncMinWidth();
+    this.__syncDisabled();
+  }
+
+  private __syncMinWidth(): void {
+    if (!this.__buttonEl) return;
+    const width = this.__buttonEl.offsetWidth;
+    if (width > 0) {
+      this.setMinWidth(width);
+    }
   }
 
   private __syncTabIndex(): void {
     if (!this.__buttonEl) return;
     this.__buttonEl.setAttribute("tabindex", "-1");
+  }
+
+  private __syncDisabled(): void {
+    if (!this.__buttonEl) return;
+    if (this.getEnabled()) {
+      this.__buttonEl.removeAttribute("disabled");
+    } else {
+      this.__buttonEl.setAttribute("disabled", "true");
+    }
   }
 
   private __renderButton(): void {
@@ -91,7 +111,7 @@ class BsButton extends qx.ui.basic.Atom {
 
     this.__htmlButton.setHtml(`
       <div class="p-1">
-        <button type="button" class="w-full ${classes}" ${tabIndexAttr}>
+        <button type="button" class="w-full ${classes}" ${tabIndexAttr} style="user-select:none">
           ${iconPart}
           ${this.__buttonText}
         </button>
@@ -112,7 +132,10 @@ class BsButton extends qx.ui.basic.Atom {
     };
 
     const variantSuffix = variantMap[this.__variant];
-    const isIconSize = this.__size === "icon" || this.__size === "sm-icon" || this.__size === "lg-icon";
+    const isIconSize =
+      this.__size === "icon" ||
+      this.__size === "sm-icon" ||
+      this.__size === "lg-icon";
     const sizePrefix = isIconSize ? "icon" : this.__size;
 
     if (sizePrefix === "default") {

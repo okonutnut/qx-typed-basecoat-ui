@@ -229,14 +229,18 @@ class Sidebar extends qx.ui.container.Composite {
           false,
         );
 
-        button.onClick(() => {
-          this.__activeLeafLabel = item.label;
-          this.__searchQuery = "";
-          this.__searchInput.setValue("");
-          this.__setPathFromLeaf(path);
-          this.fireDataEvent("select", item.label);
-          this.__renderVisibleItems(false);
-        });
+        if (item.disabled) {
+          button.setEnabled(false);
+        } else {
+          button.onClick(() => {
+            this.__activeLeafLabel = item.label;
+            this.__searchQuery = "";
+            this.__searchInput.setValue("");
+            this.__setPathFromLeaf(path);
+            this.fireDataEvent("select", item.label);
+            this.__renderVisibleItems(false);
+          });
+        }
 
         row.add(button, { flex: 1 });
         nextList.add(row);
@@ -253,7 +257,9 @@ class Sidebar extends qx.ui.container.Composite {
           hasChildren,
         );
 
-        if (hasChildren) {
+        if (item.disabled) {
+          button.setEnabled(false);
+        } else if (hasChildren) {
           button.onClick(() => {
             if (this.__isAnimating || !item.children) return;
             this.__stack.push({ label: item.label, items: item.children });
