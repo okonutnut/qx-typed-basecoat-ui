@@ -28,7 +28,7 @@ class MainPage extends qx.ui.container.Composite {
     );
 
     const subtitle = new qx.ui.basic.Label(
-      "SIAS Online — Class Scheduling & Faculty Management. Use the sidebar to manage subjects, faculty, rooms, semesters, and class schedules.",
+      "QX-TYPED with TypeScript and Qooxdoo is ready to use! Edit src/pages/main.ts to get started.",
     );
     subtitle.setWidth(400);
     subtitle.setTextColor(AppColors.mutedForeground());

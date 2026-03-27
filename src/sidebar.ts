@@ -51,7 +51,7 @@ class Sidebar extends qx.ui.container.Composite {
     this.__schoolLogo = schoolLogo;
     this.add(schoolLogo);
 
-    const header = new qx.ui.basic.Label("Aldersgate College Inc.");
+    const header = new qx.ui.basic.Label("APP_NAME");
     this.__header = header;
     header.setFont(
       //@ts-ignore
@@ -62,7 +62,7 @@ class Sidebar extends qx.ui.container.Composite {
     header.setTextColor(AppColors.sidebarForeground());
     this.add(header);
 
-    const appVersion = new qx.ui.basic.Label("Class Scheduler v1.0.0");
+    const appVersion = new qx.ui.basic.Label("APP_VERSION");
     this.__appVersion = appVersion;
     appVersion.setTextColor(AppColors.sidebarForeground());
     appVersion.setTextAlign("center");
