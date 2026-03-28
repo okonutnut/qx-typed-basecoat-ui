@@ -51,16 +51,40 @@ const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
     iconName: "graduation-cap",
     children: [
       {
-        label: "Buttons",
-        iconName: "book-open",
+        label: "Forms & inputs",
+        iconName: "layout-grid",
+        children: [
+          {
+            label: "Buttons",
+            iconName: "book-open",
+          },
+          {
+            label: "Controls",
+            iconName: "users",
+          },
+          {
+            label: "Forms",
+            iconName: "door-open",
+          },
+        ],
       },
       {
-        label: "Controls",
-        iconName: "users",
-      },
-      {
-        label: "Forms",
-        iconName: "door-open",
+        label: "Data & windows",
+        iconName: "panels-top-left",
+        children: [
+          {
+            label: "Tables",
+            iconName: "calendar",
+          },
+          {
+            label: "Toolbar",
+            iconName: "clock",
+          },
+          {
+            label: "Windows",
+            iconName: "circle",
+          },
+        ],
       },
     ],
   },
