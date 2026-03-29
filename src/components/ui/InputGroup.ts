@@ -2,6 +2,7 @@ class BsInputGroup extends qx.ui.container.Composite {
   private __label: qx.ui.basic.Label;
   private __input: BsInput;
   private __error: qx.ui.basic.Label;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     labelText: string,
@@ -11,6 +12,7 @@ class BsInputGroup extends qx.ui.container.Composite {
   ) {
     super(new qx.ui.layout.VBox(3));
     this.setAllowGrowX(true);
+    this.setAllowGrowY(true);
 
     this.__label = new qx.ui.basic.Label(labelText);
 
@@ -20,6 +22,7 @@ class BsInputGroup extends qx.ui.container.Composite {
       inputClassName,
     );
     this.__input.setAllowGrowX(true);
+    this.__input.setAllowGrowY(true);
 
     this.__error = new qx.ui.basic.Label("");
     this.__error.setVisibility("excluded");
@@ -27,6 +30,25 @@ class BsInputGroup extends qx.ui.container.Composite {
     this.add(this.__label);
     this.add(this.__input);
     this.add(this.__error);
+
+    this.__setupResizeObserver();
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.getContentElement?.().getDomElement?.();
+    if (!root) {
+      qx.event.Timer.once(() => this.__setupResizeObserver(), this, 50);
+      return;
+    }
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   public onInput(handler: (value: string) => void): this {

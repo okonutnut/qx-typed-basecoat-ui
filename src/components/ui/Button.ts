@@ -19,6 +19,7 @@ class BsButton extends qx.ui.basic.Atom {
   private __variant: BsButtonVariant = "default";
   private __size: BsButtonSize = "default";
   private __buttonEl: HTMLButtonElement | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     text?: string,
@@ -50,6 +51,7 @@ class BsButton extends qx.ui.basic.Atom {
 
     this.__htmlButton.addListenerOnce("appear", () => {
       this.__bindNativeButton();
+      this.__setupResizeObserver();
     });
 
     this.addListener("focusin", () => this.__buttonEl?.focus());
@@ -95,6 +97,20 @@ class BsButton extends qx.ui.basic.Atom {
     } else {
       this.__buttonEl.setAttribute("disabled", "true");
     }
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlButton.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __renderButton(): void {

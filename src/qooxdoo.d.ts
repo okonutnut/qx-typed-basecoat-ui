@@ -3668,6 +3668,7 @@ declare module qx.ui.core {
         hasValidLayout(): boolean;
         scheduleLayoutUpdate(): void;
         invalidateLayoutCache(): void;
+        updateLayoutProperties(props?: IMap): void;
         getSizeHint(compute?: boolean): IMap;
         protected _computeSizeHint(): IMap;
         protected _hasHeightForWidth(): boolean;

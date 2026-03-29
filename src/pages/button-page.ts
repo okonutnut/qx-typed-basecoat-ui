@@ -34,11 +34,12 @@ class ButtonPage extends qx.ui.container.Composite {
     card.setMaxWidth(this.__isMobile() ? this.__responsiveWidth - 40 : 520);
 
     const variantsContainer = new qx.ui.container.Composite(
-      new qx.ui.layout.VBox(12),
+      new qx.ui.layout.VBox(12).set({ alignX: "center" }),
     );
-    variantsContainer.setPadding(0, 24, 24, 24);
 
-    const row1 = new qx.ui.container.Composite(new qx.ui.layout.HBox(12));
+    const row1 = new qx.ui.container.Composite(
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
+    );
     row1.add(new BsButton("Default"));
     row1.add(new BsButton("Secondary", undefined, { variant: "secondary" }));
     row1.add(
@@ -46,7 +47,9 @@ class ButtonPage extends qx.ui.container.Composite {
     );
     variantsContainer.add(row1);
 
-    const row2 = new qx.ui.container.Composite(new qx.ui.layout.HBox(12));
+    const row2 = new qx.ui.container.Composite(
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
+    );
     row2.add(new BsButton("Outline", undefined, { variant: "outline" }));
     row2.add(new BsButton("Ghost", undefined, { variant: "ghost" }));
     row2.add(new BsButton("Link", undefined, { variant: "link" }));
@@ -72,17 +75,20 @@ class ButtonPage extends qx.ui.container.Composite {
     card.setMaxWidth(this.__isMobile() ? this.__responsiveWidth - 40 : 520);
 
     const sizesContainer = new qx.ui.container.Composite(
-      new qx.ui.layout.VBox(16),
+      new qx.ui.layout.VBox(16).set({ alignX: "center" }),
     );
-    sizesContainer.setPadding(0, 24, 24, 24);
 
-    const row1 = new qx.ui.container.Composite(new qx.ui.layout.HBox(12));
+    const row1 = new qx.ui.container.Composite(
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
+    );
     row1.add(new BsButton("Small", undefined, { size: "sm" }));
     row1.add(new BsButton("Default", undefined, { size: "default" }));
     row1.add(new BsButton("Large", undefined, { size: "lg" }));
     sizesContainer.add(row1);
 
-    const row2 = new qx.ui.container.Composite(new qx.ui.layout.HBox(12));
+    const row2 = new qx.ui.container.Composite(
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
+    );
     row2.add(
       new BsButton(undefined, new InlineSvgIcon("search", 16), {
         size: "icon",
@@ -120,11 +126,12 @@ class ButtonPage extends qx.ui.container.Composite {
     card.setMaxWidth(this.__isMobile() ? this.__responsiveWidth - 40 : 520);
 
     const iconContainer = new qx.ui.container.Composite(
-      new qx.ui.layout.VBox(12),
+      new qx.ui.layout.VBox(12).set({ alignX: "center" }),
     );
-    iconContainer.setPadding(0, 24, 24, 24);
 
-    const row1 = new qx.ui.container.Composite(new qx.ui.layout.HBox(12));
+    const row1 = new qx.ui.container.Composite(
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
+    );
     row1.add(
       new BsButton("Search", new InlineSvgIcon("search", 16)).set({
         width: 120,
@@ -142,7 +149,9 @@ class ButtonPage extends qx.ui.container.Composite {
     );
     iconContainer.add(row1);
 
-    const row2 = new qx.ui.container.Composite(new qx.ui.layout.HBox(12));
+    const row2 = new qx.ui.container.Composite(
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
+    );
     row2.add(
       new BsButton("Email", new InlineSvgIcon("mail", 16), {
         variant: "outline",
@@ -180,9 +189,8 @@ class ButtonPage extends qx.ui.container.Composite {
     card.setMaxWidth(this.__isMobile() ? this.__responsiveWidth - 40 : 520);
 
     const disabledContainer = new qx.ui.container.Composite(
-      new qx.ui.layout.HBox(12),
+      new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
     );
-    disabledContainer.setPadding(0, 24, 24, 24);
 
     const defaultDisabled = new BsButton("Disabled");
     defaultDisabled.setEnabled(false);

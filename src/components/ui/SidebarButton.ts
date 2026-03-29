@@ -14,6 +14,7 @@ class BsSidebarButton extends qx.ui.basic.Atom {
   private __buttonEl: HTMLButtonElement | null = null;
   private __renderPending = false;
   private __enabled = true;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(text?: string, icon?: InlineSvgIcon, className?: string) {
     super();
@@ -35,6 +36,7 @@ class BsSidebarButton extends qx.ui.basic.Atom {
 
     this.__htmlButton.addListenerOnce("appear", () => {
       this.__bindNativeButton();
+      this.__setupResizeObserver();
     });
 
     if (icon) {
@@ -50,6 +52,20 @@ class BsSidebarButton extends qx.ui.basic.Atom {
     const btn = root?.querySelector("button") ?? null;
     this.__buttonEl = btn as HTMLButtonElement | null;
     if (!this.__buttonEl) return;
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlButton.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __renderButton(): void {

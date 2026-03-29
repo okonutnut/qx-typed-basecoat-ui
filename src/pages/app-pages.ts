@@ -68,6 +68,11 @@ const PAGE_DEFINITIONS: PageDefinition[] = [
     iconName: "align-left",
     element: () => new TextareaPage(),
   },
+  {
+    label: "Avatar",
+    iconName: "user",
+    element: () => new AvatarPage(),
+  },
 ];
 
 const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
@@ -113,6 +118,10 @@ const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
       {
         label: "Textarea",
         iconName: "align-left",
+      },
+      {
+        label: "Avatar",
+        iconName: "user",
       },
     ],
   },

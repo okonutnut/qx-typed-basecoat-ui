@@ -1,5 +1,6 @@
 class BsCard extends qx.ui.container.Composite {
   private __content: qx.ui.container.Composite | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(options?: { className?: string }) {
     super(new qx.ui.layout.VBox(0).set({ alignY: "middle", alignX: "center" }));
@@ -33,7 +34,26 @@ class BsCard extends qx.ui.container.Composite {
     this._add(this.__content);
 
     this.__content.add(widget);
+    this.__setupResizeObserver();
     return this;
+  }
+
+  private __setupResizeObserver(): void {
+    if (!this.__content) return;
+    const root = this.__content.getContentElement?.().getDomElement?.();
+    if (!root) {
+      qx.event.Timer.once(() => this.__setupResizeObserver(), this, 50);
+      return;
+    }
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   removeContent(): this {

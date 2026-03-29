@@ -47,6 +47,17 @@ class CardPage extends qx.ui.container.Composite {
     formContent.add(passwordLabel);
     formContent.add(passwordInput);
 
+    const submitButton = new BsButton("Submit");
+    submitButton.setMarginTop(12);
+    formContent.add(submitButton);
+    submitButton.addListener("execute", () => {
+      const email = emailInput.getValue();
+      const password = passwordInput.getValue();
+      if (email && password) {
+        alert(`Email: ${email}\nPassword: ${password}`);
+      }
+    });
+
     card.setContent(formContent);
 
     return card;
@@ -99,7 +110,6 @@ class CardPage extends qx.ui.container.Composite {
     const imageContainer = new qx.ui.container.Composite(
       new qx.ui.layout.VBox(0),
     );
-    imageContainer.setPadding(24, 0, 0, 0);
 
     const image = new qx.ui.basic.Image(
       "https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80&w=1080&q=75",
@@ -143,7 +153,9 @@ class CardPage extends qx.ui.container.Composite {
     actionContainer.add(spacer);
     actionContainer.add(price);
 
-    const contentWrapper = new qx.ui.container.Composite(new qx.ui.layout.VBox(0));
+    const contentWrapper = new qx.ui.container.Composite(
+      new qx.ui.layout.VBox(0),
+    );
     contentWrapper.add(imageContainer);
     contentWrapper.add(actionContainer);
     card.setContent(contentWrapper);

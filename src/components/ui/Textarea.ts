@@ -10,6 +10,7 @@ class BsTextarea extends qx.ui.basic.Atom {
   private __className: string;
   private __rows: number;
   private __textareaEl: HTMLTextAreaElement | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     value?: string,
@@ -39,6 +40,7 @@ class BsTextarea extends qx.ui.basic.Atom {
 
     this.__htmlTextarea.addListenerOnce("appear", () => {
       this.__bindNativeTextarea();
+      this.__setupResizeObserver();
     });
 
     this.addListener("focusin", () => this.__textareaEl?.focus());
@@ -66,6 +68,20 @@ class BsTextarea extends qx.ui.basic.Atom {
   private __syncTabIndex(): void {
     if (!this.__textareaEl) return;
     this.__textareaEl.setAttribute("tabindex", "-1");
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlTextarea.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __escapeAttr(value: string): string {

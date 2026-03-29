@@ -10,6 +10,7 @@ class BsAvatar extends qx.ui.basic.Atom {
   private __imgEl: HTMLImageElement | null = null;
   private __fallbackEl: HTMLSpanElement | null = null;
   private __hasImageError = false;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     src?: string,
@@ -34,6 +35,7 @@ class BsAvatar extends qx.ui.basic.Atom {
 
     this.__htmlAvatar.addListenerOnce("appear", () => {
       this.__bindDom();
+      this.__setupResizeObserver();
     });
   }
 
@@ -78,6 +80,23 @@ class BsAvatar extends qx.ui.basic.Atom {
 
     const shouldShowFallback = !this.__src || this.__hasImageError;
     this.__fallbackEl.style.display = shouldShowFallback ? "flex" : "none";
+    if (this.__imgEl) {
+      this.__imgEl.style.display = shouldShowFallback ? "none" : "block";
+    }
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlAvatar.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __render(): void {
@@ -101,6 +120,7 @@ class BsAvatar extends qx.ui.basic.Atom {
     const fallbackClass = [
       "absolute",
       "inset-0",
+      "flex",
       "items-center",
       "justify-center",
       "bg-muted",
