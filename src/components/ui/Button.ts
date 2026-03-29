@@ -126,12 +126,12 @@ class BsButton extends qx.ui.basic.Atom {
       .join(" ");
 
     this.__htmlButton.setHtml(`
-      <div class="p-1">
+      <center class="p-1 h-full flex items-center justify-center">
         <button type="button" class="w-full ${classes}" ${tabIndexAttr} style="user-select:none">
           ${iconPart}
           ${this.__buttonText}
         </button>
-      </div>
+      </center>
     `);
 
     qx.event.Timer.once(() => this.__bindNativeButton(), this, 0);

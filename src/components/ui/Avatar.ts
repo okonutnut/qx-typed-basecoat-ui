@@ -133,7 +133,7 @@ class BsAvatar extends qx.ui.basic.Atom {
       .join(" ");
 
     this.__htmlAvatar.setHtml(`
-			<div class="p-1">
+			<center class="p-1 h-full flex items-center justify-center">
 				<span class="${wrapperClass}">
 					<img
 						class="${imageClass}"
@@ -144,7 +144,7 @@ class BsAvatar extends qx.ui.basic.Atom {
 						${fallback}
 					</span>
 				</span>
-			</div>
+			</center>
 		`);
 
     qx.event.Timer.once(() => this.__bindDom(), this, 0);

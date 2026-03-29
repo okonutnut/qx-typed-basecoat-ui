@@ -1,5 +1,10 @@
 class BsDrawer extends qx.ui.container.Composite {
+  static events = {
+    close: "qx.event.type.Event",
+  };
+
   private __open = false;
+  private __disposed = false;
   private __backdrop: qx.ui.core.Widget;
   private __sheet: qx.ui.container.Composite;
   private __drawerPanel: qx.ui.core.Widget;
@@ -101,7 +106,7 @@ class BsDrawer extends qx.ui.container.Composite {
   }
 
   public open(): void {
-    if (this.__open) return;
+    if (this.__open || this.__disposed) return;
     this.__open = true;
     this.__isAnimating = true;
     const token = ++this.__animationToken;
@@ -144,7 +149,7 @@ class BsDrawer extends qx.ui.container.Composite {
   }
 
   public close(): void {
-    if (!this.__open) return;
+    if (!this.__open || this.__disposed) return;
     this.__open = false;
     this.__isAnimating = true;
     const token = ++this.__animationToken;
@@ -172,6 +177,7 @@ class BsDrawer extends qx.ui.container.Composite {
         this.__isAnimating = false;
         this.__dragStartY = null;
         this.__dragOffset = 0;
+        this.fireEvent("close");
       },
       this,
       240,
@@ -266,11 +272,17 @@ class BsDrawer extends qx.ui.container.Composite {
     widget: qx.ui.core.Widget,
     styles: Record<string, string>,
   ): void {
+    if (this.__disposed) return;
     const contentElement = widget.getContentElement() as any;
     if (!contentElement || !contentElement.setStyle) return;
     for (const key in styles) {
       if (!Object.prototype.hasOwnProperty.call(styles, key)) continue;
       contentElement.setStyle(key, styles[key]);
     }
+  }
+
+  public dispose(): void {
+    this.__disposed = true;
+    super.dispose();
   }
 }

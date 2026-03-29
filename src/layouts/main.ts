@@ -16,7 +16,7 @@ class MainLayout extends qx.ui.container.Composite {
     const MOBILE_BREAKPOINT = 768;
     let isSidebarCollapsed = false;
     let isMobileMode = qx.bom.Viewport.getWidth() < MOBILE_BREAKPOINT;
-    let drawer: BsDrawer | null = null;
+    let sidebarDrawer: BsDrawer | null = null;
 
     const sidebar = new Sidebar(sidebarItems, pageTitle);
 
@@ -79,7 +79,7 @@ class MainLayout extends qx.ui.container.Composite {
     const desktopShell = new qx.ui.container.Composite(new qx.ui.layout.HBox());
 
     const mountDesktop = () => {
-      drawer?.close();
+      sidebarDrawer?.close();
       sidebar.setDrawerMode(false);
       mobileTopBar.exclude();
 
@@ -95,15 +95,15 @@ class MainLayout extends qx.ui.container.Composite {
       sidebar.setCollapsed(false);
       sidebar.setDrawerMode(true);
       mobileTopBar.show();
-      drawer = new BsDrawer(contentContainer, sidebar);
+      sidebarDrawer = new BsDrawer(contentContainer, sidebar);
 
       this.removeAll();
-      this.add(drawer);
+      this.add(sidebarDrawer);
     };
 
     const navbar = new Navbar(pageTitle, () => {
       if (isMobileMode) {
-        drawer?.toggle();
+        sidebarDrawer?.toggle();
       } else {
         isSidebarCollapsed = !isSidebarCollapsed;
         sidebar.setCollapsed(isSidebarCollapsed);
@@ -149,7 +149,7 @@ class MainLayout extends qx.ui.container.Composite {
       currentPage = nextPage;
 
       if (title) navbar.setPageTitle(title);
-      if (isMobileMode) drawer?.close();
+      if (isMobileMode) sidebarDrawer?.close();
     };
 
     sidebar.addListener("select", (ev: qx.event.type.Data) => {

@@ -3,7 +3,6 @@ function qooxdooMain(app: qx.application.Standalone) {
   type AppLayoutMode = "login" | "main";
 
   const createMainLayout = () => {
-    // Filter pages by the logged-in user's role
     const pageMap = new Map<string, () => qx.ui.core.Widget>();
     PAGE_DEFINITIONS.forEach((definition) => {
       if (!definition.element) return;
@@ -41,8 +40,7 @@ function qooxdooMain(app: qx.application.Standalone) {
     });
   };
 
-  const currentLayout: AppLayoutMode = "main"; // TODO: replace with actual authentication check
-  setAppLayout(currentLayout);
+  setAppLayout("main");
 }
 
 qx.registry.registerMainMethod(qooxdooMain);
