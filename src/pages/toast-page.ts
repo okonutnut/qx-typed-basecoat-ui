@@ -88,7 +88,9 @@ class ToastPage extends qx.ui.container.Composite {
       new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
     );
 
-    const successBtn = new BsButton("Success", undefined, { variant: "secondary" });
+    const successBtn = new BsButton("Success", undefined, {
+      variant: "secondary",
+    });
     successBtn.addListener("execute", () => {
       BsToast.success("Success!", "Your operation completed successfully.");
     });
@@ -106,15 +108,22 @@ class ToastPage extends qx.ui.container.Composite {
       new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
     );
 
-    const warningBtn = new BsButton("Warning", undefined, { variant: "secondary" });
+    const warningBtn = new BsButton("Warning", undefined, {
+      variant: "secondary",
+    });
     warningBtn.addListener("execute", () => {
       BsToast.warning("Warning", "Please review your input before proceeding.");
     });
     buttonRow2.add(warningBtn);
 
-    const errorBtn = new BsButton("Error", undefined, { variant: "destructive" });
+    const errorBtn = new BsButton("Error", undefined, {
+      variant: "destructive",
+    });
     errorBtn.addListener("execute", () => {
-      BsToast.error("Error", "An error occurred while processing your request.");
+      BsToast.error(
+        "Error",
+        "An error occurred while processing your request.",
+      );
     });
     buttonRow2.add(errorBtn);
 
@@ -152,6 +161,7 @@ class ToastPage extends qx.ui.container.Composite {
     );
 
     const withDescBtn = new BsButton("Show with Description");
+    withDescBtn.setWidth(180);
     withDescBtn.addListener("execute", () => {
       BsToast.show({
         title: "Event Created",
