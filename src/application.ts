@@ -3,11 +3,19 @@ function qooxdooMain(app: qx.application.Standalone) {
   type AppLayoutMode = "login" | "main";
 
   const createMainLayout = () => {
-    const pageMap = new Map<string, () => qx.ui.core.Widget>();
-    PAGE_DEFINITIONS.forEach((definition) => {
-      if (!definition.element) return;
-      pageMap.set(definition.label, definition.element);
-    });
+    const extractPageMap = (routes: RouteDefinition[]): Map<string, () => qx.ui.core.Widget> => {
+      const map = new Map<string, () => qx.ui.core.Widget>();
+      const processRoute = (route: RouteDefinition) => {
+        if (route.element) {
+          map.set(route.label, route.element);
+        }
+        route.children?.forEach(processRoute);
+      };
+      routes.forEach(processRoute);
+      return map;
+    };
+
+    const pageMap = extractPageMap(ROUTE_DEFINITIONS);
 
     const sidebarItems = manipulateSidebarItems(createSidebarItems(), pageMap);
     const initialPage = new MainPage();

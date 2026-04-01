@@ -34,13 +34,18 @@ class BsAlertDialog {
 
     // Body
     const body = BsAlertDialog.__body!;
+    body.style.width = "100%";
     if (config.children) {
       dialog.removeAttribute("aria-describedby");
       const bodyHost = document.createElement("div");
+      bodyHost.style.width = "100%";
+      bodyHost.style.boxSizing = "border-box";
       body.appendChild(bodyHost);
 
       BsAlertDialog.__bodyRoot = new qx.ui.root.Inline(bodyHost);
-      BsAlertDialog.__bodyRoot.setLayout(new qx.ui.layout.Grow());
+      const vbox = new qx.ui.layout.VBox();
+      vbox.setAlignX("stretch");
+      BsAlertDialog.__bodyRoot.setLayout(vbox);
       BsAlertDialog.__bodyRoot.add(config.children);
     } else if (config.description) {
       dialog.setAttribute("aria-describedby", "bs-dialog-desc");
@@ -59,7 +64,7 @@ class BsAlertDialog {
 
     if (buttons === "ok-cancel" || buttons === "cancel") {
       const cancelBtn = document.createElement("button");
-      cancelBtn.className = "btn-sm-primary";
+      cancelBtn.className = "btn-sm-outline";
       cancelBtn.textContent = cancelLabel;
       cancelBtn.type = "button";
       cancelBtn.dataset.action = "cancel";
@@ -94,8 +99,11 @@ class BsAlertDialog {
     dialog.id = "bs-global-dialog";
     dialog.className = "dialog";
     dialog.setAttribute("aria-labelledby", "bs-dialog-title");
+    dialog.style.maxWidth = "500px";
+    dialog.style.width = "90%";
 
     const wrapper = document.createElement("div");
+    wrapper.style.width = "100%";
 
     const header = document.createElement("header");
     const title = document.createElement("h2");
@@ -103,6 +111,7 @@ class BsAlertDialog {
     header.appendChild(title);
 
     const body = document.createElement("div");
+    body.style.width = "100%";
     const footer = document.createElement("footer");
 
     wrapper.appendChild(header);
