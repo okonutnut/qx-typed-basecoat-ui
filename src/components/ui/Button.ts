@@ -112,7 +112,10 @@ class BsButton extends qx.ui.basic.Atom {
     };
 
     const variantSuffix = variantMap[this.__variant];
-    const isIconSize = this.__size === "icon" || this.__size === "sm-icon" || this.__size === "lg-icon";
+    const isIconSize =
+      this.__size === "icon" ||
+      this.__size === "sm-icon" ||
+      this.__size === "lg-icon";
     const sizePrefix = isIconSize ? "icon" : this.__size;
 
     if (sizePrefix === "default") {
