@@ -4,6 +4,7 @@ class BsSeparator extends qx.ui.basic.Atom {
   private __decorative: boolean;
   private __className: string;
   private __label: string;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     orientation: "horizontal" | "vertical" = "horizontal",
@@ -27,6 +28,25 @@ class BsSeparator extends qx.ui.basic.Atom {
 
     this.__render();
     this._add(this.__htmlSeparator);
+
+    this.__setupResizeObserver();
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlSeparator.getContentElement().getDomElement();
+    if (!root) {
+      qx.event.Timer.once(() => this.__setupResizeObserver(), this, 50);
+      return;
+    }
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __escapeHtml(value: string): string {

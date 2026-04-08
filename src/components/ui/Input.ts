@@ -10,6 +10,7 @@ class BsInput extends qx.ui.basic.Atom {
   private __className: string;
   private __leadingHtml = "";
   private __inputEl: HTMLInputElement | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(value?: string, placeholder?: string, className?: string) {
     super();
@@ -45,6 +46,8 @@ class BsInput extends qx.ui.basic.Atom {
         this.fireDataEvent("input", next);
         if (prev !== next) this.fireDataEvent("changeValue", next);
       });
+
+      this.__setupResizeObserver();
     });
 
     // when widget gets focus from Tab, move focus to native input
@@ -61,6 +64,20 @@ class BsInput extends qx.ui.basic.Atom {
   private __syncTabIndex(): void {
     if (!this.__inputEl) return;
     this.__inputEl.setAttribute("tabindex", "1");
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlInput.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __escapeAttr(value: string): string {

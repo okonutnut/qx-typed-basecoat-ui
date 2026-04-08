@@ -1,53 +1,15 @@
-type PageDefinition = {
-  label: string;
-  iconName: string;
-  element?: () => qx.ui.core.Widget;
-};
-
-type SidebarDefinition = {
+type RouteDefinition = {
   label: string;
   iconName?: string;
+  element?: () => qx.ui.core.Widget;
   disabled?: boolean;
   hidden?: boolean;
-  children?: SidebarDefinition[];
+  children?: RouteDefinition[];
 };
 
-const PAGE_DEFINITIONS: PageDefinition[] = [
+const ROUTE_DEFINITIONS: RouteDefinition[] = [
   {
-    label: "Buttons",
-    iconName: "book-open",
-    element: () => new ButtonsPage(),
-  },
-  {
-    label: "Controls",
-    iconName: "users",
-    element: () => new ControlPage(),
-  },
-  {
-    label: "Forms",
-    iconName: "door-open",
-    element: () => new FormPage(),
-  },
-  {
-    label: "Tables",
-    iconName: "calendar",
-    element: () => new TablePage(),
-  },
-  {
-    label: "Toolbar",
-    iconName: "clock",
-    element: () => new ToolBarPage(),
-  },
-  {
-    label: "Windows",
-    iconName: "circle",
-    element: () => new WindowsPage(),
-  },
-];
-
-const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
-  {
-    label: "Items",
+    label: "Qooxdoo UI",
     iconName: "graduation-cap",
     children: [
       {
@@ -86,14 +48,85 @@ const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
           },
         ],
       },
+      {
+        label: "Controls",
+        iconName: "users",
+        element: () => new ControlPage(),
+      },
+      {
+        label: "Forms",
+        iconName: "door-open",
+        element: () => new FormPage(),
+      },
+      {
+        label: "Toolbar",
+        iconName: "wrench",
+        element: () => new ToolBarPage(),
+      },
+      {
+        label: "Windows",
+        iconName: "app-window",
+        element: () => new WindowsPage(),
+      },
+    ],
+  },
+  {
+    label: "Basecoat UI",
+    iconName: "box",
+    children: [
+      {
+        label: "Button",
+        iconName: "mouse-pointer",
+        element: () => new ButtonPage(),
+      },
+      {
+        label: "Card",
+        iconName: "credit-card",
+        element: () => new CardPage(),
+      },
+      {
+        label: "Input",
+        iconName: "edit",
+        element: () => new InputPage(),
+      },
+      {
+        label: "Select",
+        iconName: "chevron-down",
+        element: () => new SelectPage(),
+      },
+      {
+        label: "Textarea",
+        iconName: "align-left",
+        element: () => new TextareaPage(),
+      },
+      {
+        label: "Avatar",
+        iconName: "user",
+        element: () => new AvatarPage(),
+      },
+      {
+        label: "Alert Dialog",
+        iconName: "alert-circle",
+        element: () => new AlertDialogPage(),
+      },
+      {
+        label: "Label",
+        iconName: "tag",
+        element: () => new LabelPage(),
+      },
+      {
+        label: "Toast",
+        iconName: "bell",
+        element: () => new ToastPage(),
+      },
     ],
   },
 ];
 
 function createSidebarItems(
-  definitions: SidebarDefinition[] = SIDEBAR_DEFINITIONS,
+  definitions: RouteDefinition[] = ROUTE_DEFINITIONS,
 ) {
-  const createItems = (items: SidebarDefinition[]): SidebarItem[] => {
+  const createItems = (items: RouteDefinition[]): SidebarItem[] => {
     return items.map((definition) => ({
       label: definition.label,
       icon: definition.iconName

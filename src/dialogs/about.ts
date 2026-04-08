@@ -1,8 +1,11 @@
 function showAboutDialog(): void {
   const aboutContent = new qx.ui.container.Composite(new qx.ui.layout.VBox(10));
-  aboutContent.setBackgroundColor(AppColors.card());
+  aboutContent.setBackgroundColor("transparent");
 
-  const aboutTable = new qx.ui.container.Composite(new qx.ui.layout.Grid(8, 14));
+  const aboutTable = new qx.ui.container.Composite(
+    new qx.ui.layout.Grid(8, 14),
+  );
+  aboutTable.setBackgroundColor("transparent");
   const tableLayout = aboutTable.getLayout() as qx.ui.layout.Grid;
   tableLayout.setColumnFlex(1, 1);
 
@@ -13,10 +16,13 @@ function showAboutDialog(): void {
   const headerTitle = new qx.ui.basic.Label(
     "Copyright @ 2014 - 2020 Digital Software",
   ).set({
-    font: new qx.bom.Font("14", ["Inter", "sans-serif"]).set({ bold: true })
+    font: new qx.bom.Font("14", ["Inter", "sans-serif"]).set({ bold: true }),
   });
 
-  aboutTable.add(new qx.ui.basic.Label("Chief Architect"), { row: 1, column: 0 });
+  aboutTable.add(new qx.ui.basic.Label("Chief Architect"), {
+    row: 1,
+    column: 0,
+  });
   aboutTable.add(
     new qx.ui.basic.Label("Thomas C. Saddul, BSMath, MCS, MSIT").set({
       font: new qx.bom.Font("14", ["Inter", "sans-serif"]).set({ bold: true }),

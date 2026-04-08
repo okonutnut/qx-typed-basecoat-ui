@@ -10,6 +10,7 @@ class BsTextarea extends qx.ui.basic.Atom {
   private __className: string;
   private __rows: number;
   private __textareaEl: HTMLTextAreaElement | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     value?: string,
@@ -21,6 +22,7 @@ class BsTextarea extends qx.ui.basic.Atom {
 
     this._setLayout(new qx.ui.layout.Grow());
     this.setAllowGrowX(true);
+    this.setAllowGrowY(true);
     this.setFocusable(true);
 
     this.__value = value ?? "";
@@ -30,12 +32,15 @@ class BsTextarea extends qx.ui.basic.Atom {
 
     this.__htmlTextarea = new qx.ui.embed.Html("");
     this.__htmlTextarea.setAllowGrowX(true);
+    this.__htmlTextarea.setAllowGrowY(true);
 
     this.__render();
     this._add(this.__htmlTextarea);
+    this.setMinHeight(110);
 
     this.__htmlTextarea.addListenerOnce("appear", () => {
       this.__bindNativeTextarea();
+      this.__setupResizeObserver();
     });
 
     this.addListener("focusin", () => this.__textareaEl?.focus());
@@ -65,6 +70,20 @@ class BsTextarea extends qx.ui.basic.Atom {
     this.__textareaEl.setAttribute("tabindex", "-1");
   }
 
+  private __setupResizeObserver(): void {
+    const root = this.__htmlTextarea.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
+  }
+
   private __escapeAttr(value: string): string {
     return value
       .replace(/&/g, "&amp;")
@@ -87,6 +106,7 @@ class BsTextarea extends qx.ui.basic.Atom {
     const value = this.__escapeAttr(this.__value);
     const placeholder = this.__escapeAttr(this.__placeholder);
     const tabIndexAttr = 'tabindex="-1"';
+    const rowsStyle = `min-height: ${this.__rows * 24}px;`;
 
     this.__htmlTextarea.setHtml(`
       <div class="p-1">
@@ -94,6 +114,7 @@ class BsTextarea extends qx.ui.basic.Atom {
           class="${classes}"
           placeholder="${placeholder}"
           rows="${this.__rows}"
+          style="${rowsStyle}"
           ${tabIndexAttr}
         >${value}</textarea>
       </div>

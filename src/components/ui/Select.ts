@@ -8,6 +8,7 @@ class BsSelect extends qx.ui.basic.Atom {
   private __className: string;
   private __value = "";
   private __selectEl: HTMLSelectElement | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(options: string[] = [], className?: string) {
     super();
@@ -27,6 +28,7 @@ class BsSelect extends qx.ui.basic.Atom {
 
     this.__htmlSelect.addListenerOnce("appear", () => {
       this.__bindNativeSelect();
+      this.__setupResizeObserver();
     });
 
     this.addListener("focusin", () => this.__selectEl?.focus());
@@ -44,6 +46,20 @@ class BsSelect extends qx.ui.basic.Atom {
   private __syncTabIndex(): void {
     if (!this.__selectEl) return;
     this.__selectEl.setAttribute("tabindex", "-1");
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlSelect.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __bindNativeSelect(): void {

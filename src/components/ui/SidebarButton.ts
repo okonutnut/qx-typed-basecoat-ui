@@ -13,6 +13,8 @@ class BsSidebarButton extends qx.ui.basic.Atom {
   private __centered = false;
   private __buttonEl: HTMLButtonElement | null = null;
   private __renderPending = false;
+  private __enabled = true;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(text?: string, icon?: InlineSvgIcon, className?: string) {
     super();
@@ -34,6 +36,7 @@ class BsSidebarButton extends qx.ui.basic.Atom {
 
     this.__htmlButton.addListenerOnce("appear", () => {
       this.__bindNativeButton();
+      this.__setupResizeObserver();
     });
 
     if (icon) {
@@ -51,6 +54,20 @@ class BsSidebarButton extends qx.ui.basic.Atom {
     if (!this.__buttonEl) return;
   }
 
+  private __setupResizeObserver(): void {
+    const root = this.__htmlButton.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
+  }
+
   private __renderButton(): void {
     const iconPart = this.__iconHtml ? `<span>${this.__iconHtml}</span>` : "";
     const textPart = this.__collapsed ? "" : this.__buttonText;
@@ -60,7 +77,9 @@ class BsSidebarButton extends qx.ui.basic.Atom {
         : "";
     const activeClass = this.__active
       ? "font-semibold btn-sm-primary"
-      : "btn-sm-ghost";
+      : this.__enabled
+        ? "btn-sm-ghost"
+        : "btn-sm-ghost opacity-50 cursor-not-allowed";
     const layoutClass = this.__collapsed
       ? "justify-center"
       : this.__centered
@@ -92,6 +111,7 @@ class BsSidebarButton extends qx.ui.basic.Atom {
         <button
           type="button"
           class="${classes}"
+          style="user-select:none"
         >
           ${centeredIconPart}
           ${textPart}
@@ -141,6 +161,17 @@ class BsSidebarButton extends qx.ui.basic.Atom {
     this.__trailingHtml = html;
     this.__scheduleRender();
     return this;
+  }
+
+  public setEnabled(enabled: boolean): this {
+    if (this.__enabled === enabled) return this;
+    this.__enabled = enabled;
+    this.__scheduleRender();
+    return this;
+  }
+
+  public isEnabled(): boolean {
+    return this.__enabled;
   }
 
   private __scheduleRender(): void {

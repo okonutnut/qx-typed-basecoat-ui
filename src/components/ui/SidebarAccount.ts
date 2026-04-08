@@ -24,6 +24,7 @@ class BsSidebarAccount extends qx.ui.basic.Atom {
   private __menuPopup: qx.ui.popup.Popup;
   private __menuContainer: qx.ui.container.Composite;
   private __menuAnimToken = 0;
+  private __resizeObserver: ResizeObserver | null = null;
 
   constructor(
     name?: string,
@@ -93,6 +94,7 @@ class BsSidebarAccount extends qx.ui.basic.Atom {
 
     this.__htmlButton.addListener("appear", () => {
       this.__bindNativeButton();
+      this.__setupResizeObserver();
     });
 
     this.__menuPopup.addListener("disappear", () => {
@@ -382,6 +384,20 @@ class BsSidebarAccount extends qx.ui.basic.Atom {
     if (!this.__avatarFallbackEl) return;
     const shouldShow = !this.__avatarSrc || this.__hasImageError;
     this.__avatarFallbackEl.style.display = shouldShow ? "flex" : "none";
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlButton.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(() => {
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
   }
 
   private __renderButton(): void {
