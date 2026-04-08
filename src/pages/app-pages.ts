@@ -93,6 +93,11 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
         iconName: "sliders",
         element: () => new SliderPage(),
       },
+      {
+        label: "Combobox",
+        iconName: "search",
+        element: () => new ComboboxPage(),
+      },
     ],
   },
 ];
