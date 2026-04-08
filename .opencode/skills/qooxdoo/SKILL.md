@@ -19,6 +19,7 @@ Reference `src/qooxdoo.d.ts` for type definitions when writing Qooxdoo code.
 - Building pages and registering them
 - Working with Qooxdoo events and listeners
 - Styling with decorators, fonts, colors
+- When a qx.bom.Font is used add a //@ts-ignore comment above it to avoid type errors due to Qooxdoo internals.
 
 **Not for:** BasecoatUI components (BsButton, BsCard, etc.) - use the basecoatui skill for those.
 

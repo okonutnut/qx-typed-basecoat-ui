@@ -88,6 +88,11 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
         iconName: "bell",
         element: () => new ToastPage(),
       },
+      {
+        label: "Slider",
+        iconName: "sliders",
+        element: () => new SliderPage(),
+      },
     ],
   },
 ];

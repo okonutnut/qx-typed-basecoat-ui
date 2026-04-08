@@ -21,6 +21,7 @@ Use the API reference at `src/basecoatui.api.md` for detailed component document
 - Working with drawers (BsDrawer) or dialogs (BsAlertDialog)
 - Building sidebar navigation (BsSidebarButton, BsSidebarAccount)
 - Using shadcn-style Tailwind CSS components
+- If you need help with the official BasecoatUI components use this website for reference and ask questions about how to use them https://basecoatui.com/. 
 
 **Not for:** Native Qooxdoo widgets or framework questions - use the qooxdoo skill for those.
 
