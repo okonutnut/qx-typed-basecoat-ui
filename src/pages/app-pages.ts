@@ -98,6 +98,11 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
         iconName: "search",
         element: () => new ComboboxPage(),
       },
+      {
+        label: "Radio Group",
+        iconName: "circle",
+        element: () => new RadioGroupPage(),
+      },
     ],
   },
 ];

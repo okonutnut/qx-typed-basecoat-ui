@@ -3,9 +3,9 @@ class BsCard extends qx.ui.container.Composite {
   private __resizeObserver: ResizeObserver | null = null;
 
   constructor(options?: { className?: string }) {
-    super(new qx.ui.layout.VBox(0).set({ alignY: "middle", alignX: "center" }));
+    super(new qx.ui.layout.VBox());
     this.setAllowGrowX(true);
-    this.setAllowGrowY(true);
+    this.setAllowGrowY(false);
 
     this.setBackgroundColor("var(--card)");
     this.setDecorator(
@@ -18,23 +18,46 @@ class BsCard extends qx.ui.container.Composite {
     );
   }
 
-  setContent(widget: qx.ui.core.Widget): this {
+  setContent(
+    widget: qx.ui.core.Widget,
+    options?: { width?: number | null; height?: number | null },
+  ): this {
     if (this.__content) {
       this.__content.dispose();
     }
 
-    const layout = new qx.ui.layout.VBox(0).set({
-      alignY: "middle",
-      alignX: "center",
-    });
+    const layout = new qx.ui.layout.VBox();
     this.__content = new qx.ui.container.Composite(layout);
     this.__content.setAllowGrowX(true);
-    this.__content.setAllowGrowY(true);
     this.__content.setPadding(24);
+
+    if (options?.width !== undefined && options.width !== null) {
+      this.__content.setWidth(options.width);
+    }
+    if (options?.height !== undefined && options.height !== null) {
+      this.__content.setHeight(options.height);
+    }
+
     this._add(this.__content);
+
+    this.__content.addListenerOnce("appear", () => {
+      const el = this.__content?.getContentElement()?.getDomElement();
+      if (el) {
+        el.style.overflow = "auto";
+      }
+    });
 
     this.__content.add(widget);
     this.__setupResizeObserver();
+    return this;
+  }
+
+  removeContent(): this {
+    if (this.__content) {
+      this._remove(this.__content);
+      this.__content.dispose();
+      this.__content = null;
+    }
     return this;
   }
 
@@ -54,14 +77,5 @@ class BsCard extends qx.ui.container.Composite {
     this.addListener("disappear", () => {
       this.__resizeObserver?.disconnect();
     });
-  }
-
-  removeContent(): this {
-    if (this.__content) {
-      this._remove(this.__content);
-      this.__content.dispose();
-      this.__content = null;
-    }
-    return this;
   }
 }
