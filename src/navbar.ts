@@ -7,9 +7,15 @@ class Navbar extends qx.ui.container.Composite {
   private __titleLabel: qx.ui.basic.Label;
   private __actionsPopup: qx.ui.popup.Popup;
   private __isActionsOpen = false;
+  private __config: AppConfig;
 
-  constructor(pageTitle?: string, onToggleSidebar?: () => void) {
+  constructor(
+    pageTitle?: string,
+    onToggleSidebar?: () => void,
+    config?: Partial<AppConfig>,
+  ) {
     super(new qx.ui.layout.HBox(2));
+    this.__config = { ...DEFAULT_APP_CONFIG, ...config };
     this.setAlignY("middle");
     this.setPadding(8);
     this.setHeight(55);
@@ -99,8 +105,11 @@ class Navbar extends qx.ui.container.Composite {
       ),
     );
     this.addListener("action", (ev: qx.event.type.Data) => {
-      if ((ev.getData() as string) === "show-about-dialog") {
-        showAboutDialog();
+      const action = ev.getData() as string;
+      if (action === "support" && this.__config.callbacks.onSupport) {
+        this.__config.callbacks.onSupport();
+      } else if (action === "show-about-dialog" && this.__config.callbacks.onAbout) {
+        this.__config.callbacks.onAbout();
       }
     });
 

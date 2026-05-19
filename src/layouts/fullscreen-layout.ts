@@ -1,12 +1,15 @@
-class LoginLayout extends qx.ui.container.Composite {
+class FullscreenLayout extends qx.ui.container.Composite {
   static events = {
     login: "qx.event.type.Event",
   };
 
-  constructor() {
+  private __config: AppConfig;
+
+  constructor(config?: Partial<AppConfig>) {
     super(
       new qx.ui.layout.VBox(12).set({ alignX: "center", alignY: "middle" }),
     );
+    this.__config = { ...DEFAULT_APP_CONFIG, ...config };
     this.setBackgroundColor(AppColors.background());
 
     const card = new qx.ui.container.Composite(new qx.ui.layout.VBox(0));
@@ -23,7 +26,7 @@ class LoginLayout extends qx.ui.container.Composite {
       }),
     );
 
-    const schoolLogo = new qx.ui.basic.Image("resource/app/app_logo.png");
+    const schoolLogo = new qx.ui.basic.Image(this.__config.resources.logo);
     schoolLogo.setAlignX("center");
     schoolLogo.set({
       scale: true,
@@ -32,7 +35,7 @@ class LoginLayout extends qx.ui.container.Composite {
     });
     card.add(schoolLogo);
 
-    const title = new qx.ui.basic.Label("Aldersgate College Inc.");
+    const title = new qx.ui.basic.Label(this.__config.login.title);
     title.setTextAlign("center");
     title.setAlignX("center");
     title.setAllowGrowX(true);
@@ -44,7 +47,7 @@ class LoginLayout extends qx.ui.container.Composite {
     title.setMarginBottom(10);
     card.add(title);
 
-    const location = new qx.ui.basic.Label("Solano, Nueva Vizcaya");
+    const location = new qx.ui.basic.Label(this.__config.login.subtitle);
     location.setTextAlign("center");
     location.setAlignX("center");
     location.setAllowGrowX(true);

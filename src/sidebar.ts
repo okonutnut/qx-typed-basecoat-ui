@@ -23,14 +23,21 @@ class Sidebar extends qx.ui.container.Composite {
   private __isAnimating = false;
   private __hasRendered = false;
   private __stack: Array<{ label: string; items: SidebarItem[] }> = [];
+  private __config: AppConfig;
 
-  constructor(sidebarItems: SidebarItem[], initialActiveLabel?: string) {
+  constructor(
+    sidebarItems: SidebarItem[],
+    initialActiveLabel?: string,
+    config?: Partial<AppConfig>,
+  ) {
     super(new qx.ui.layout.VBox(0).set({ alignX: "center" }));
+    this.__config = { ...DEFAULT_APP_CONFIG, ...config };
+
     this.__rootItems = sidebarItems;
     this.__activeLeafLabel =
       initialActiveLabel ?? this.__findFirstLeafLabel(sidebarItems);
 
-    this.setWidth(230);
+    this.setWidth(this.__config.sidebar.width);
     this.setPadding(10);
     this.setAlignX("center");
     this.setBackgroundColor(AppColors.sidebar());
@@ -42,7 +49,7 @@ class Sidebar extends qx.ui.container.Composite {
       }),
     );
 
-    const schoolLogo = new qx.ui.basic.Image("resource/app/app_logo.png");
+    const schoolLogo = new qx.ui.basic.Image(this.__config.resources.logo);
     schoolLogo.set({
       scale: true,
       width: 42,
@@ -51,7 +58,7 @@ class Sidebar extends qx.ui.container.Composite {
     this.__schoolLogo = schoolLogo;
     this.add(schoolLogo);
 
-    const header = new qx.ui.basic.Label("APP_NAME");
+    const header = new qx.ui.basic.Label(this.__config.appName);
     this.__header = header;
     header.setFont(
       //@ts-ignore
@@ -62,7 +69,7 @@ class Sidebar extends qx.ui.container.Composite {
     header.setTextColor(AppColors.sidebarForeground());
     this.add(header);
 
-    const appVersion = new qx.ui.basic.Label("APP_VERSION");
+    const appVersion = new qx.ui.basic.Label(this.__config.appVersion);
     this.__appVersion = appVersion;
     appVersion.setTextColor(AppColors.sidebarForeground());
     appVersion.setTextAlign("center");
@@ -77,7 +84,7 @@ class Sidebar extends qx.ui.container.Composite {
 
     this.__searchInput = new BsInput("", "Search pages...", "w-full input-sm");
     this.__searchInput.setLeadingHtml(
-      '<img src="resource/app/icons/search.svg" alt="" width="16" height="16" style="display:block;opacity:0.7" />',
+      '<img src="' + InlineSvgIcon.iconsBaseUrl + 'search.svg" alt="" width="16" height="16" style="display:block;opacity:0.7" />',
     );
     this.__searchInput.setAllowGrowX(true);
     this.__searchInput.onInput((value) => {
@@ -96,7 +103,7 @@ class Sidebar extends qx.ui.container.Composite {
       new InlineSvgIcon("arrow-left", 16),
     );
     backButton.setAllowGrowX(true);
-    backButton.setWidth(230);
+    backButton.setWidth(this.__config.sidebar.width);
     backButton.setCentered(true);
     this.__backButton = backButton;
     backButton.onClick(() => {
@@ -122,13 +129,16 @@ class Sidebar extends qx.ui.container.Composite {
     });
 
     const footer = new BsSidebarAccount(
-      "User", // TODO: replace with actual user name,
-      "Role", // TODO: replace with actual role,
-      "resource/app/user.png",
+      this.__config.user.name,
+      this.__config.user.role,
+      this.__config.resources.userAvatar,
       "RB",
     );
     this.__footer = footer;
     this.__footer.onAction((action) => {
+      if (action === "logout" && this.__config.callbacks.onLogout) {
+        this.__config.callbacks.onLogout();
+      }
       this.fireDataEvent("action", action);
     });
     this.add(footer);
@@ -362,7 +372,7 @@ class Sidebar extends qx.ui.container.Composite {
     const button = new BsSidebarButton(label, icon);
     button.setAllowGrowX(true);
     button.setCollapsed(this.__collapsed);
-    button.setWidth(this.__collapsed ? 56 : 230);
+    button.setWidth(this.__collapsed ? this.__config.sidebar.collapsedWidth : this.__config.sidebar.width);
     if (hasChildren) {
       button.setTrailingHtml("&rsaquo;");
     }
@@ -421,10 +431,11 @@ class Sidebar extends qx.ui.container.Composite {
       return;
     }
 
+    const w = this.__config.sidebar.width;
     if (skipAnimation) {
       this.show();
-      this.setMinWidth(230);
-      this.setWidth(230);
+      this.setMinWidth(w);
+      this.setWidth(w);
       this.__setDomStyles(this, { overflow: "visible", opacity: "1" });
     } else {
       this.show();
@@ -443,8 +454,8 @@ class Sidebar extends qx.ui.container.Composite {
         () => {
           this.__setDomStyles(this, {
             transition: `width ${DURATION}ms ${EASING}, min-width ${DURATION}ms ${EASING}, opacity ${DURATION}ms ${EASING}`,
-            width: "230px",
-            minWidth: "230px",
+            width: w + "px",
+            minWidth: w + "px",
             opacity: "1",
           });
         },
@@ -454,8 +465,8 @@ class Sidebar extends qx.ui.container.Composite {
 
       qx.event.Timer.once(
         () => {
-          this.setMinWidth(230);
-          this.setWidth(230);
+          this.setMinWidth(w);
+          this.setWidth(w);
           this.__setDomStyles(this, {
             overflow: "visible",
             transition: "none",

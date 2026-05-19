@@ -1,6 +1,23 @@
 function qooxdooMain(app: qx.application.Standalone) {
   const root = <qx.ui.container.Composite>app.getRoot();
-  type AppLayoutMode = "login" | "main";
+  type AppLayoutMode = "fullscreen" | "main";
+
+  const appConfig: AppConfig = {
+    ...DEFAULT_APP_CONFIG,
+    appName: "QX-Typed App",
+    appVersion: "1.0.0",
+    user: { name: "User", role: "Role" },
+    login: {
+      title: "Aldersgate College Inc.",
+      subtitle: "Solano, Nueva Vizcaya",
+    },
+    callbacks: {
+      onLogout: () => setAppLayout("fullscreen"),
+      onAbout: () => showAboutDialog(),
+    },
+  };
+
+  InlineSvgIcon.iconsBaseUrl = appConfig.resources.iconsBaseUrl;
 
   const createMainLayout = () => {
     const extractPageMap = (routes: RouteDefinition[]): Map<string, () => qx.ui.core.Widget> => {
@@ -26,24 +43,25 @@ function qooxdooMain(app: qx.application.Standalone) {
       sidebarItems,
       pageMap,
       initialTitle,
+      appConfig,
     );
     mainLayout.addListener("logout", () => {
-      setAppLayout("login");
+      setAppLayout("fullscreen");
     });
     return mainLayout;
   };
 
-  const createLoginLayout = () => {
-    const loginLayout = new LoginLayout();
-    loginLayout.addListener("login", () => {
+  const createFullscreenLayout = () => {
+    const layout = new FullscreenLayout(appConfig);
+    layout.addListener("login", () => {
       setAppLayout("main");
     });
-    return loginLayout;
+    return layout;
   };
 
   const setAppLayout = (mode: AppLayoutMode): void => {
     root.removeAll();
-    root.add(mode === "main" ? createMainLayout() : createLoginLayout(), {
+    root.add(mode === "main" ? createMainLayout() : createFullscreenLayout(), {
       edge: 0,
     });
   };

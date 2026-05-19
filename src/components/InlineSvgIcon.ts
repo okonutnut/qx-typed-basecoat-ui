@@ -1,4 +1,6 @@
 class InlineSvgIcon extends qx.ui.embed.Html {
+  static iconsBaseUrl = "resource/app/icons/";
+
   private __name: string;
   private __size: number;
 
@@ -33,7 +35,7 @@ class InlineSvgIcon extends qx.ui.embed.Html {
   }
 
   private __loadAndRender() {
-    const url = "resource/app/icons/" + this.__name + ".svg";
+    const url = InlineSvgIcon.iconsBaseUrl + this.__name + ".svg";
 
     fetch(url)
       .then((r) => r.text())

@@ -8,17 +8,21 @@ class MainLayout extends qx.ui.container.Composite {
     sidebarItems: SidebarItem[],
     pageMap: Map<string, () => qx.ui.core.Widget>,
     pageTitle?: string,
+    config?: Partial<AppConfig>,
   ) {
     super();
     this.setLayout(new qx.ui.layout.Grow());
     this.setBackgroundColor(AppColors.background());
+
+    const cfg = { ...DEFAULT_APP_CONFIG, ...config };
+    InlineSvgIcon.iconsBaseUrl = cfg.resources.iconsBaseUrl;
 
     const MOBILE_BREAKPOINT = 768;
     let isSidebarCollapsed = false;
     let isMobileMode = qx.bom.Viewport.getWidth() < MOBILE_BREAKPOINT;
     let sidebarDrawer: BsDrawer | null = null;
 
-    const sidebar = new Sidebar(sidebarItems, pageTitle);
+    const sidebar = new Sidebar(sidebarItems, pageTitle, cfg);
 
     const contentContainer = new qx.ui.container.Composite(
       new qx.ui.layout.VBox(),
@@ -43,7 +47,7 @@ class MainLayout extends qx.ui.container.Composite {
       }),
     );
 
-    const mobileSchoolLogo = new qx.ui.basic.Image("resource/app/app_logo.png");
+    const mobileSchoolLogo = new qx.ui.basic.Image(cfg.resources.logo);
     mobileSchoolLogo.set({
       scale: true,
       width: 32,
@@ -53,9 +57,9 @@ class MainLayout extends qx.ui.container.Composite {
     mobileTopBar.add(new qx.ui.core.Spacer(), { flex: 1 });
 
     const mobileAccount = new BsSidebarAccount(
-      "User", // TODO: replace with actual username
-      "role", // TODO: replace with actual role
-      "resource/app/user.png",
+      cfg.user.name,
+      cfg.user.role,
+      cfg.resources.userAvatar,
       "RB",
       "px-0 py-0",
     );
@@ -108,7 +112,7 @@ class MainLayout extends qx.ui.container.Composite {
         isSidebarCollapsed = !isSidebarCollapsed;
         sidebar.setCollapsed(isSidebarCollapsed);
       }
-    });
+    }, cfg);
     contentContainer.add(mobileTopBar);
     contentContainer.add(navbar);
 
