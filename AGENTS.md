@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This file provides guidance for AI coding agents working in this repository.
+Guidance for AI coding agents working in this repository.
 
 ---
 
@@ -15,129 +15,88 @@ This file provides guidance for AI coding agents working in this repository.
 | `npm run watch` | Alias for watch mode |
 | `npm run serve` | Alias for http-server |
 
----
+## Architecture
 
-## Testing
+- **Single-page app** using Qooxdoo UI framework with custom Basecoat UI components
+- TypeScript compiles to a single AMD bundle: `lib/application.js`
+- Entry point: `src/application.ts` exports function registered via `qx.registry.registerMainMethod(qooxdooMain)`
+- `index.html` loads Qooxdoo (`resource/qooxdoo.js`), Tailwind CSS (CDN), Basecoat CSS (CDN), then the compiled bundle
+- **Two layout modes**: `"main"` (sidebar + navbar + content) and `"login"` (auth screen), toggled by events
+- **PWA**: Service worker at `sw.js`, manifest at `manifest.webmanifest`
 
-| Command | Description |
-|---------|-------------|
-| `npm run test:e2e` | Run all Playwright E2E tests |
-| `npm run test:e2e:headed` | Run tests with browser visible |
-| `npx playwright test tests/playwright/example.spec.js` | Run single test file |
-| `npx playwright test tests/playwright/example.spec.js --project=chromium` | Run single test in Chromium |
+### Page Routing
 
-**Note:** There are no unit tests or lint scripts. Tests live under `tests/playwright/`. Playwright config starts http-server on port 8080 automatically.
+- Single source of truth: `ROUTE_DEFINITIONS` in `src/pages/app-pages.ts` (not `PAGE_DEFINITIONS`)
+- Nested tree with two top-level groups: **"Qooxdoo UI"** (native widgets) and **"Basecoat UI"** (custom `Bs*` components)
+- Labels (human strings) are the authoritative keys for navigation, caching, and sidebar matching
+- `manipulateSidebarItems()` drops leaf items that have no matching page factory -- keep labels in sync
+- Sidebar: drill-down tree with search, back navigation, collapse/expand, and mobile drawer mode
 
----
+### Two-Tier Pages
 
-## High-level Architecture
-
-- **Single-page app** using Qooxdoo UI framework
-- TypeScript compiles to single AMD bundle: `lib/application.js`
-- Entry point: `src/application.ts` exports `qooxdooMain`
-- `index.html` loads `resource/qooxdoo.js` then `lib/application.js`
-
-### Key Directories
-
-```
-src/
-  application.ts          # Main entry point
-  pages/
-    app-pages.ts          # PAGE_DEFINITIONS & SIDEBAR_DEFINITIONS
-    *-page.ts             # Individual page components
-  components/ui/          # Reusable UI widgets (BsButton, BsCard, etc.)
-  layouts/                # Main and login layouts
-  dialogs/                # Dialog components
-  interfaces/             # TypeScript interfaces
-  types/                  # Type definitions
-lib/                      # Compiled output (AMD bundle)
-resource/                 # Static assets (images, qooxdoo.js)
-tests/playwright/         # E2E tests
-```
+| Group | Page class convention | Files |
+|-------|----------------------|-------|
+| Qooxdoo UI | `ButtonsPage`, `ControlPage`, `FormPage`, `ToolBarPage`, `WindowsPage` | `src/pages/buttons.ts`, `control.ts`, etc. |
+| Basecoat UI | `ButtonPage`, `CardPage`, `InputPage`, `SelectPage`, `TextareaPage`, `AvatarPage`, `AlertDialogPage`, `LabelPage`, `ToastPage`, `SliderPage`, `ComboboxPage`, `RadioGroupPage` | `src/pages/*-page.ts` (some omit `-page` suffix) |
 
 ---
 
-## Code Style Guidelines
+## Key Conventions
 
-### Naming Conventions
+### Naming
 
-- **Classes**: PascalCase (e.g., `BsButton`, `AvatarPage`, `MainLayout`)
-- **Private members**: Double underscore prefix (e.g., `__responsiveWidth`, `__onResize`)
-- **Type aliases**: PascalCase with descriptive suffix (e.g., `BsAvatarShape`, `PageDefinition`)
-- **Constants**: UPPER_SNAKE_CASE (e.g., `PAGE_DEFINITIONS`, `SIDEBAR_DEFINITIONS`)
-- **Files**: kebab-case (e.g., `avatar-page.ts`, `app-pages.ts`)
+- **Classes**: PascalCase (`BsButton`, `AvatarPage`, `MainLayout`)
+- **Private members**: Double underscore prefix (`__responsiveWidth`, `__onResize`)
+- **Constants**: UPPER_SNAKE_CASE (`ROUTE_DEFINITIONS`)
+- **Type aliases**: PascalCase with descriptive suffix (`BsButtonVariant`, `SidebarItem`)
+- **Files**: kebab-case (`avatar-page.ts`, `app-pages.ts`)
+- **Basecoat components**: `Bs` prefix (`BsButton`, `BsCard`, `BsInput`)
 
-### Patterns
+### Code Patterns
 
-- **Page factory pattern**: Pages are zero-argument factories returning `qx.ui.core.Widget`
-- **Label-as-key**: Page labels in `PAGE_DEFINITIONS` must match sidebar labels
-- **Widget composition**: Extend Qooxdoo base classes (`qx.ui.container.Composite`, etc.)
-- **Layout pattern**: Use `new qx.ui.layout.VBox(spacing)` or `HBox(spacing)` with `.set({ alignX: "center" })` for alignment
-
-### Component Structure
-
-```typescript
-class BsComponent extends qx.ui.baseClass {
-  // Private fields with __ prefix
-  private __field: type;
-
-  constructor(param?: type) {
-    super();
-    // Initialize
-  }
-
-  private __privateMethod(): void {
-    // Implementation
-  }
-
-  public setSomething(value: type): this {
-    // Setter returning this for chaining
-    return this;
-  }
-}
-```
-
-### TypeScript
-
-- No explicit imports needed (AMD single-file output, global namespace)
-- Use `// @ts-ignore` sparingly for Qooxdoo internals
-- Prefer `this` return type for setters to enable chaining
-- Use nullish coalescing (`??`) for defaults
-- Type unions for limited value sets (e.g., `"full" | "rounded" | "square"`)
+- **No ES imports/exports** -- AMD single-file output means all code shares the global namespace
+- **Page factory pattern**: `ROUTE_DEFINITIONS` entries have `element: () => new SomePage()` -- pages are instantiated on demand and cached by label
+- **Widget composition**: Extend Qooxdoo base classes (`qx.ui.container.Composite`, `qx.ui.basic.Atom`, etc.)
+- **Inline HTML rendering**: Most Basecoat UI components render native HTML via `qx.ui.embed.Html` to apply Tailwind CSS classes directly (not via `className` parameter)
+- **Static events**: `static events = { execute: "qx.event.type.Event" }` followed by convenience methods like `onClick(fn): this`
+- **Setters return `this`** for chaining
+- **`// @ts-ignore`** used sparingly for Qooxdoo internals (e.g., `new qx.bom.Font(...)`)
+- **Dynamic theming**: `AppColors` class resolves CSS custom properties (oklch values in `theme.css`) at runtime
+- **Icons**: `InlineSvgIcon(name, size)` fetches SVGs from `resource/app/icons/` and renders inline
+- **Resource paths**: Images at `resource/app/filename.png`
+- **Responsive**: `__responsiveWidth` field with resize listener, breakpoint at 768px
 
 ### Layout & Styling
 
-- Use Tailwind CSS classes for styling (applied via `className` parameter or HTML)
-- Qooxdoo layout classes: `VBox`, `HBox`, `Grow`, `Grid`
-- Spacing: pass numeric value to layout constructor (e.g., `new VBox(20)`)
-- Alignment: use `.set({ alignX: "center", alignY: "middle" })`
-- Responsive: check `this.__responsiveWidth < 768` for mobile breakpoint
-
-### Resource Paths
-
-- Images: `resource/app/filename.png`
-- Icons use `InlineSvgIcon(name, size)` class
-
----
-
-## Key Files Reference
-
-| File | Purpose |
-|------|---------|
-| `src/pages/app-pages.ts` | Page registry and sidebar definitions |
-| `src/application.ts` | App entry point |
-| `src/qooxdoo.d.ts` | Qooxdoo TypeScript declarations |
-| `tsconfig.json` | Compiler options (AMD module, ES6 target) |
-| `playwright.config.js` | E2E test configuration |
+- **Qooxdoo layouts**: `new VBox(spacing)`, `new HBox(spacing)`, `new Grow()`, `new Grid()`
+- **Alignment**: `.set({ alignX: "center", alignY: "middle" })`
+- **Tailwind classes** applied via HTML strings rendered in `qx.ui.embed.Html` widgets
+- **Basecoat CSS**: CDN-loaded at `basecoat-css@0.3.11`, overridden by local `theme.css`
 
 ---
 
 ## Adding New Pages
 
-1. Create `src/pages/my-page.ts` with class `MyPage extends qx.ui.container.Composite`
-2. Add to `PAGE_DEFINITIONS` in `app-pages.ts`:
+1. Create page file under `src/pages/` with class extending `qx.ui.container.Composite` (name: `*Page`)
+2. Add an entry to `ROUTE_DEFINITIONS` in `app-pages.ts`:
    ```typescript
    { label: "My Page", iconName: "icon-name", element: () => new MyPage() }
    ```
-3. Add to `SIDEBAR_DEFINITIONS` under appropriate parent
-4. Ensure label strings match exactly between definitions
+3. Add a matching child entry under the appropriate parent in the nested tree
+4. Labels must match exactly between route definition and sidebar (they are the key)
+
+---
+
+## Key Files
+
+| File | Purpose |
+|------|---------|
+| `src/pages/app-pages.ts` | `ROUTE_DEFINITIONS`, `createSidebarItems()`, `manipulateSidebarItems()` |
+| `src/application.ts` | App entry point, layout switching |
+| `src/qooxdoo.d.ts` | 15k-line Qooxdoo TypeScript declarations |
+| `src/components/ui/` | Basecoat UI components (BsButton, BsCard, BsInput, etc.) |
+| `src/app-colors.ts` | Runtime CSS variable resolution for theming |
+| `src/sidebar.ts` | Sidebar navigation widget with search and drill-down |
+| `src/layouts/main.ts` | Main layout (sidebar, navbar, content, responsive drawer) |
+| `theme.css` | CSS custom properties (oklch colors), Tailwind variable mappings |
+| `tsconfig.json` | AMD module, ES6 target, single `outFile` |

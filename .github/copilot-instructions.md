@@ -67,17 +67,3 @@ Notes:
 
 ---
 
-## Playwright end-to-end (E2E) testing
-
-- Playwright config: `playwright.config.js` (webServer starts a local server on port 8080 using the existing `http-server` dependency).
-- Install Playwright browsers and runner: npm run playwright:install
-- Run all E2E tests: npm run test:e2e
-- Run a single test file: npx playwright test tests/playwright/example.spec.js
-- Run a single test in Chromium: npx playwright test tests/playwright/example.spec.js --project=chromium
-
-## MCP Servers
-
-- Playwright is configured as an E2E test server via `playwright.config.js`. It launches `npx http-server -p 8080 .` and runs tests against `http://localhost:8080`.
-- Tests live under `tests/playwright/`.
-
-If this repository gains additional tests or linting, update the scripts and instructions here.
