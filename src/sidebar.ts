@@ -11,7 +11,7 @@ class Sidebar extends qx.ui.container.Composite {
   private __appVersion: qx.ui.basic.Label;
   private __searchInput: BsInput;
   private __backContainer: qx.ui.container.Composite;
-  private __itemsViewport: qx.ui.container.Composite;
+  private __itemsViewport: qx.ui.container.Scroll;
   private __listContainer: qx.ui.container.Composite | null = null;
   private __footer: BsSidebarAccount;
   private __backButton!: BsSidebarButton;
@@ -36,7 +36,6 @@ class Sidebar extends qx.ui.container.Composite {
     this.__rootItems = sidebarItems;
     this.__activeLeafLabel =
       initialActiveLabel ?? this.__findFirstLeafLabel(sidebarItems);
-
     this.setWidth(this.__config.sidebar.width);
     this.setPadding(10);
     this.setAlignX("center");
@@ -114,19 +113,11 @@ class Sidebar extends qx.ui.container.Composite {
     this.__backContainer.add(backButton);
     this.add(this.__backContainer);
 
-    this.__itemsViewport = new qx.ui.container.Composite(
-      new qx.ui.layout.Grow(),
-    );
+    this.__itemsViewport = new qx.ui.container.Scroll();
     this.__itemsViewport.setAllowGrowX(true);
     this.__itemsViewport.setAllowGrowY(true);
     this.__itemsViewport.setMinHeight(10);
     this.add(this.__itemsViewport, { flex: 1 });
-
-    this.__itemsViewport.addListenerOnce("appear", () => {
-      this.__setDomStyles(this.__itemsViewport, {
-        overflow: "hidden",
-      });
-    });
 
     const footer = new BsSidebarAccount(
       this.__config.user.name,
@@ -292,7 +283,7 @@ class Sidebar extends qx.ui.container.Composite {
     }
 
     if (!this.__listContainer || !animated || this.__collapsed) {
-      this.__itemsViewport.removeAll();
+      this.__itemsViewport.getChildren().slice().forEach((c) => this.__itemsViewport.remove(c))
       this.__itemsViewport.add(nextList);
       this.__listContainer = nextList;
       return;
@@ -301,7 +292,15 @@ class Sidebar extends qx.ui.container.Composite {
     const previousList = this.__listContainer;
     this.__isAnimating = true;
 
-    this.__itemsViewport.add(nextList);
+    const wrapper = new qx.ui.container.Composite(new qx.ui.layout.Canvas());
+    wrapper.setAllowGrowX(true);
+    wrapper.setAllowGrowY(true);
+
+    this.__itemsViewport.getChildren().slice().forEach((c) => this.__itemsViewport.remove(c))
+    this.__itemsViewport.add(wrapper);
+    wrapper.add(previousList);
+    wrapper.add(nextList);
+
     this.__setDomStyles(nextList, {
       position: "absolute",
       top: "0",
@@ -340,11 +339,13 @@ class Sidebar extends qx.ui.container.Composite {
 
     qx.event.Timer.once(
       () => {
-        this.__itemsViewport.remove(previousList);
         this.__setDomStyles(nextList, {
           position: "relative",
           transform: "none",
         });
+        this.__itemsViewport.getChildren().slice().forEach((c) => this.__itemsViewport.remove(c))
+        this.__itemsViewport.add(nextList);
+        wrapper.dispose();
         this.__listContainer = nextList;
         this.__isAnimating = false;
       },
