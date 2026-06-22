@@ -37,7 +37,6 @@ class Sidebar extends qx.ui.container.Composite {
     this.__activeLeafLabel =
       initialActiveLabel ?? this.__findFirstLeafLabel(sidebarItems);
     this.setWidth(this.__config.sidebar.width);
-    this.setPadding(10);
     this.setAlignX("center");
     this.setBackgroundColor(AppColors.sidebar());
     this.setDecorator(
@@ -491,7 +490,7 @@ class Sidebar extends qx.ui.container.Composite {
 
   private __applyChromeMode(): void {
     if (this.__drawerMode) {
-      this.setPadding(8);
+      this.setPadding(8, 0, 8, 8);
       this.setDecorator(
         new qx.ui.decoration.Decorator().set({
           widthRight: 0,
@@ -506,7 +505,7 @@ class Sidebar extends qx.ui.container.Composite {
       return;
     }
 
-    this.setPadding(10);
+    this.setPadding(5, 5, 0, 10);
     this.setDecorator(
       new qx.ui.decoration.Decorator().set({
         widthRight: 1,

@@ -122,8 +122,7 @@ Two skills are already installed and should be consulted via `skill` tool:
 | `src/interfaces/sidebar-item.ts` | `SidebarItem` interface |
 | `src/app-colors.ts` | Runtime CSS variable resolution for theming |
 | `src/sidebar.ts` | Sidebar navigation widget (search, drill-down, collapse, drawer mode) |
-| `src/layouts/main.ts` | Main layout (sidebar, navbar, content, responsive drawer) |
-| `src/layouts/fullscreen-layout.ts` | Fullscreen layout (login/auth screen) |
+| `src/components/Layout.ts` | `MainLayout` (sidebar, navbar, content, responsive drawer) and `FullscreenLayout` (login/auth card) |
 | `src/navbar.ts` | Navbar with page title and actions popup |
 | `src/components/InlineSvgIcon.ts` | Inline SVG icon fetcher |
 | `src/dialogs/about.ts` | About dialog |
