@@ -133,19 +133,13 @@ class ButtonPage extends qx.ui.container.Composite {
       new qx.ui.layout.HBox(12).set({ alignX: "center", alignY: "middle" }),
     );
     row1.add(
-      new BsButton("Search", new InlineSvgIcon("search", 16)).set({
-        width: 120,
-      }),
+      new BsButton("Search", new InlineSvgIcon("search", 16)),
     );
     row1.add(
-      new BsButton("Download", new InlineSvgIcon("download", 16)).set({
-        width: 120,
-      }),
+      new BsButton("Download", new InlineSvgIcon("download", 16)),
     );
     row1.add(
-      new BsButton("Settings", new InlineSvgIcon("settings", 16)).set({
-        width: 120,
-      }),
+      new BsButton("Settings", new InlineSvgIcon("settings", 16)),
     );
     iconContainer.add(row1);
 
@@ -155,17 +149,17 @@ class ButtonPage extends qx.ui.container.Composite {
     row2.add(
       new BsButton("Email", new InlineSvgIcon("mail", 16), {
         variant: "outline",
-      }).set({ width: 120 }),
+      }),
     );
     row2.add(
       new BsButton("User", new InlineSvgIcon("user", 16), {
         variant: "secondary",
-      }).set({ width: 120 }),
+      }),
     );
     row2.add(
       new BsButton("Delete", new InlineSvgIcon("trash", 16), {
         variant: "destructive",
-      }).set({ width: 120 }),
+      }),
     );
     iconContainer.add(row2);
 

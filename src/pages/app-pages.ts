@@ -15,7 +15,7 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
       {
         label: "Buttons",
         iconName: "book-open",
-        element: () => new ButtonPage(),
+        element: () => new ButtonsPage(),
       },
       {
         label: "Controls",

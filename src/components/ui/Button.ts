@@ -20,6 +20,8 @@ class BsButton extends qx.ui.basic.Atom {
   private __size: BsButtonSize = "default";
   private __buttonEl: HTMLButtonElement | null = null;
   private __resizeObserver: ResizeObserver | null = null;
+  private __cachedContentWidth = 0;
+  private __cachedContentHeight = 0;
 
   constructor(
     text?: string,
@@ -103,7 +105,10 @@ class BsButton extends qx.ui.basic.Atom {
     const root = this.__htmlButton.getContentElement().getDomElement();
     if (!root) return;
 
-    this.__resizeObserver = new ResizeObserver(() => {
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
       this.scheduleLayoutUpdate();
     });
     this.__resizeObserver.observe(root);
@@ -111,6 +116,18 @@ class BsButton extends qx.ui.basic.Atom {
     this.addListener("disappear", () => {
       this.__resizeObserver?.disconnect();
     });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__htmlButton.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
   }
 
   private __renderButton(): void {
@@ -127,7 +144,7 @@ class BsButton extends qx.ui.basic.Atom {
 
     this.__htmlButton.setHtml(`
       <center class="p-1 h-full flex items-center justify-center">
-        <button type="button" class="w-full ${classes}" ${tabIndexAttr} style="user-select:none">
+        <button type="button" class="min-w-[120px] ${classes}" ${tabIndexAttr} style="user-select:none">
           ${iconPart}
           ${this.__buttonText}
         </button>

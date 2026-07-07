@@ -22,6 +22,8 @@ class BsCombobox extends qx.ui.basic.Atom {
   private __isOpen = false;
   private __direction: "bottom" | "top" | "left" | "right" = "bottom";
   private __disabled = false;
+  private __cachedContentWidth = 0;
+  private __cachedContentHeight = 0;
 
   constructor(
     options: { value: string; label: string }[] = [],
@@ -377,7 +379,7 @@ class BsCombobox extends qx.ui.basic.Atom {
     const disabledAttr = this.__disabled ? "disabled" : "";
     const disabledClass = this.__disabled ? "opacity-50 cursor-not-allowed" : "";
 
-    const classes = ["btn-outline", "w-[200px]", this.__className, disabledClass]
+    const classes = ["btn-outline", "w-full", this.__className, disabledClass]
       .filter(Boolean)
       .join(" ");
 
@@ -406,7 +408,10 @@ class BsCombobox extends qx.ui.basic.Atom {
     const root = this.__htmlTrigger.getContentElement().getDomElement();
     if (!root) return;
 
-    this.__resizeObserver = new ResizeObserver(() => {
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
       this.scheduleLayoutUpdate();
     });
     this.__resizeObserver.observe(root);
@@ -414,6 +419,18 @@ class BsCombobox extends qx.ui.basic.Atom {
     this.addListener("disappear", () => {
       this.__resizeObserver?.disconnect();
     });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__htmlTrigger.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
   }
 
   public getValue(): string {

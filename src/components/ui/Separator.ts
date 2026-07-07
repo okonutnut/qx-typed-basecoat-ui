@@ -5,6 +5,8 @@ class BsSeparator extends qx.ui.basic.Atom {
   private __className: string;
   private __label: string;
   private __resizeObserver: ResizeObserver | null = null;
+  private __cachedContentWidth = 0;
+  private __cachedContentHeight = 0;
 
   constructor(
     orientation: "horizontal" | "vertical" = "horizontal",
@@ -39,7 +41,10 @@ class BsSeparator extends qx.ui.basic.Atom {
       return;
     }
 
-    this.__resizeObserver = new ResizeObserver(() => {
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
       this.scheduleLayoutUpdate();
     });
     this.__resizeObserver.observe(root);
@@ -47,6 +52,18 @@ class BsSeparator extends qx.ui.basic.Atom {
     this.addListener("disappear", () => {
       this.__resizeObserver?.disconnect();
     });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__htmlSeparator.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
   }
 
   private __escapeHtml(value: string): string {

@@ -19,12 +19,16 @@ class BsDateField extends qx.ui.basic.Atom {
   private __calendarClickHandler: ((ev: MouseEvent) => void) | null = null;
   private __value: Date | null = null;
   private __disabled = false;
+  private __resizeObserver: ResizeObserver | null = null;
+  private __cachedContentWidth = 0;
+  private __cachedContentHeight = 0;
 
   constructor() {
     super();
 
     // Set a layout so children get measured and laid out
     this._setLayout(new qx.ui.layout.Canvas());
+    this.setAllowGrowX(true);
 
     // Generate unique ID for the component
     this.__dateId = `date-${qx.core.Id.getInstance().toHashCode(this)}`;
@@ -139,6 +143,8 @@ class BsDateField extends qx.ui.basic.Atom {
           });
         }
       }
+
+      this.__setupResizeObserver();
     });
   }
 
@@ -882,9 +888,39 @@ class BsDateField extends qx.ui.basic.Atom {
    */
   public destruct(): void {
     this.__closeCalendar();
+    this.__resizeObserver?.disconnect();
     if (this.__popoverContainer && this.__popoverContainer.parentNode) {
       this.__popoverContainer.parentNode.removeChild(this.__popoverContainer);
     }
     super.destruct();
+  }
+
+  private __setupResizeObserver(): void {
+    const container = this.__getContainerElement();
+    if (!container) return;
+
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(container);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__html?.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
   }
 }

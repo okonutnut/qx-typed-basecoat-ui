@@ -9,8 +9,11 @@ class BsAvatar extends qx.ui.basic.Atom {
   private __shape: BsAvatarShape;
   private __imgEl: HTMLImageElement | null = null;
   private __fallbackEl: HTMLSpanElement | null = null;
+  private __wrapperEl: HTMLElement | null = null;
   private __hasImageError = false;
   private __resizeObserver: ResizeObserver | null = null;
+  private __cachedContentWidth = 32;
+  private __cachedContentHeight = 32;
 
   constructor(
     src?: string,
@@ -59,6 +62,7 @@ class BsAvatar extends qx.ui.basic.Atom {
     this.__fallbackEl =
       (root?.querySelector("[data-avatar-fallback]") as HTMLSpanElement) ??
       null;
+    this.__wrapperEl = root?.firstElementChild as HTMLElement | null;
 
     if (!this.__imgEl) return;
 
@@ -83,13 +87,20 @@ class BsAvatar extends qx.ui.basic.Atom {
     if (this.__imgEl) {
       this.__imgEl.style.display = shouldShowFallback ? "none" : "block";
     }
+    if (this.__wrapperEl) {
+      this.__wrapperEl.classList.toggle("border", shouldShowFallback);
+      this.__wrapperEl.classList.toggle("border-border", shouldShowFallback);
+    }
   }
 
   private __setupResizeObserver(): void {
     const root = this.__htmlAvatar.getContentElement().getDomElement();
     if (!root) return;
 
-    this.__resizeObserver = new ResizeObserver(() => {
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
       this.scheduleLayoutUpdate();
     });
     this.__resizeObserver.observe(root);
@@ -97,6 +108,18 @@ class BsAvatar extends qx.ui.basic.Atom {
     this.addListener("disappear", () => {
       this.__resizeObserver?.disconnect();
     });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__htmlAvatar.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
   }
 
   private __render(): void {
@@ -109,6 +132,7 @@ class BsAvatar extends qx.ui.basic.Atom {
       "inline-flex",
       "size-8",
       "shrink-0",
+      "overflow-hidden",
       shapeClass,
       this.__className,
     ]
@@ -133,19 +157,17 @@ class BsAvatar extends qx.ui.basic.Atom {
       .join(" ");
 
     this.__htmlAvatar.setHtml(`
-			<center class="p-1 h-full flex items-center justify-center">
-				<span class="${wrapperClass}">
-					<img
-						class="${imageClass}"
-						alt="${alt}"
-						src="${src}"
-					/>
-					<span class="${fallbackClass}" data-avatar-fallback>
-						${fallback}
-					</span>
-				</span>
-			</center>
-		`);
+      <span class="${wrapperClass}">
+        <img
+          class="${imageClass}"
+          alt="${alt}"
+          src="${src}"
+        />
+        <span class="${fallbackClass}" data-avatar-fallback>
+          ${fallback}
+        </span>
+      </span>
+    `);
 
     qx.event.Timer.once(() => this.__bindDom(), this, 0);
   }

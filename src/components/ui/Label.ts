@@ -5,6 +5,9 @@ class BsLabel extends qx.ui.basic.Atom {
   private __className: string;
   private __disabled: boolean;
   private __children: qx.ui.core.Widget[];
+  private __resizeObserver: ResizeObserver | null = null;
+  private __cachedContentWidth = 0;
+  private __cachedContentHeight = 0;
 
   constructor(text?: string, forId?: string, className?: string) {
     super();
@@ -21,6 +24,10 @@ class BsLabel extends qx.ui.basic.Atom {
     this._add(this.__htmlLabel);
 
     this.__render();
+
+    this.__htmlLabel.addListenerOnce("appear", () => {
+      this.__setupResizeObserver();
+    });
   }
 
   private __escapeAttr(value: string): string {
@@ -64,5 +71,34 @@ class BsLabel extends qx.ui.basic.Atom {
     this.__disabled = value ?? false;
     this.__render();
     return this;
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlLabel.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__htmlLabel.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
   }
 }
