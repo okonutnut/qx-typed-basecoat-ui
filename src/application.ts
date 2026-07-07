@@ -1,4 +1,5 @@
 function qooxdooMain(app: qx.application.Standalone) {
+  document.documentElement.classList.remove("dark");
   const root = <qx.ui.container.Composite>app.getRoot();
   type AppLayoutMode = "fullscreen" | "main";
 

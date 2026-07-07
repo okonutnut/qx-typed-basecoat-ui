@@ -1,0 +1,174 @@
+class BsTextarea extends qx.ui.basic.Atom {
+  static events = {
+    input: "qx.event.type.Data",
+    changeValue: "qx.event.type.Data",
+  };
+
+  private __htmlTextarea: qx.ui.embed.Html;
+  private __value: string;
+  private __placeholder: string;
+  private __className: string;
+  private __rows: number;
+  private __textareaEl: HTMLTextAreaElement | null = null;
+  private __resizeObserver: ResizeObserver | null = null;
+  private __cachedContentWidth = 0;
+  private __cachedContentHeight = 0;
+
+  constructor(
+    value?: string,
+    placeholder?: string,
+    className?: string,
+    rows: number = 4,
+  ) {
+    super();
+
+    this._setLayout(new qx.ui.layout.Grow());
+    this.setAllowGrowX(true);
+    this.setAllowGrowY(true);
+    this.setFocusable(true);
+
+    this.__value = value ?? "";
+    this.__placeholder = placeholder ?? "";
+    this.__className = className ?? "";
+    this.__rows = rows;
+
+    this.__htmlTextarea = new qx.ui.embed.Html("");
+    this.__htmlTextarea.setAllowGrowX(true);
+    this.__htmlTextarea.setAllowGrowY(true);
+
+    this.__render();
+    this._add(this.__htmlTextarea);
+    this.setMinHeight(110);
+
+    this.__htmlTextarea.addListenerOnce("appear", () => {
+      this.__bindNativeTextarea();
+      this.__setupResizeObserver();
+    });
+
+    this.addListener("focusin", () => this.__textareaEl?.focus());
+    this.addListener("changeTabIndex", () => this.__syncTabIndex());
+  }
+
+  private __bindNativeTextarea(): void {
+    const root = this.__htmlTextarea.getContentElement().getDomElement();
+    this.__textareaEl =
+      (root?.querySelector("textarea") as HTMLTextAreaElement) ?? null;
+    if (!this.__textareaEl) return;
+
+    this.__syncTabIndex();
+
+    this.__textareaEl.oninput = () => {
+      const next = this.__textareaEl?.value ?? "";
+      const prev = this.__value;
+      this.__value = next;
+
+      this.fireDataEvent("input", next);
+      if (prev !== next) this.fireDataEvent("changeValue", next);
+    };
+  }
+
+  private __syncTabIndex(): void {
+    if (!this.__textareaEl) return;
+    this.__textareaEl.setAttribute("tabindex", "-1");
+  }
+
+  private __setupResizeObserver(): void {
+    const root = this.__htmlTextarea.getContentElement().getDomElement();
+    if (!root) return;
+
+    this.__resizeObserver = new ResizeObserver(([entry]) => {
+      const target = entry.target as HTMLElement;
+      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
+      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
+      this.scheduleLayoutUpdate();
+    });
+    this.__resizeObserver.observe(root);
+
+    this.addListener("disappear", () => {
+      this.__resizeObserver?.disconnect();
+    });
+  }
+
+  // @ts-ignore
+  _getContentHint(): qx.ui.layout.SizeHint {
+    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
+      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
+    }
+    const contentEl = this.__htmlTextarea.getContentElement()?.getDomElement();
+    if (contentEl) {
+      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
+    }
+    return { width: 0, height: 0 };
+  }
+
+  private __escapeAttr(value: string): string {
+    return value
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  private __render(): void {
+    const classes = [
+      "textarea",
+      "bg-card",
+      "text-foreground",
+      "border-border",
+      "placeholder:text-muted-foreground",
+      this.__className,
+    ]
+      .filter(Boolean)
+      .join(" ");
+    const value = this.__escapeAttr(this.__value);
+    const placeholder = this.__escapeAttr(this.__placeholder);
+    const tabIndexAttr = 'tabindex="-1"';
+    const rowsStyle = `min-height: ${this.__rows * 24}px;`;
+
+    this.__htmlTextarea.setHtml(`
+      <div class="p-1">
+        <textarea
+          class="${classes}"
+          placeholder="${placeholder}"
+          rows="${this.__rows}"
+          style="${rowsStyle}"
+          ${tabIndexAttr}
+        >${value}</textarea>
+      </div>
+    `);
+
+    qx.event.Timer.once(() => this.__bindNativeTextarea(), this, 0);
+  }
+
+  public getValue(): string {
+    return this.__textareaEl?.value ?? this.__value;
+  }
+
+  public setValue(value: string): this {
+    this.__value = value ?? "";
+    if (this.__textareaEl) this.__textareaEl.value = this.__value;
+    else this.__render();
+    return this;
+  }
+
+  public setPlaceholder(value: string): this {
+    this.__placeholder = value ?? "";
+    if (this.__textareaEl) this.__textareaEl.placeholder = this.__placeholder;
+    else this.__render();
+    return this;
+  }
+
+  public setRows(rows: number): this {
+    this.__rows = rows;
+    if (this.__textareaEl) this.__textareaEl.rows = rows;
+    else this.__render();
+    return this;
+  }
+
+  public onInput(handler: (value: string) => void): this {
+    this.addListener("input", (ev: qx.event.type.Data) => {
+      handler((ev.getData() as string) ?? "");
+    });
+    return this;
+  }
+}
