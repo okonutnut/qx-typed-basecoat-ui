@@ -7,8 +7,7 @@
     "src/components/InlineSvgIcon.ts",
     "src/app-colors.ts",
     "src/components/Layout.ts",
-    "src/interfaces/AppConfig.ts",
-    "src/interfaces/sidebar-item.ts",
+    "src/components/AppConfig.ts",
     "src/types/custom-components.d.ts"
   ],
   "assets": [

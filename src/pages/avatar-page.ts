@@ -73,7 +73,7 @@ class AvatarPage extends qx.ui.container.Composite {
     fallbackContainer.add(new BsAvatar(undefined, "User", "A"));
     fallbackContainer.add(new BsAvatar(undefined, "User", "B"));
     fallbackContainer.add(
-      new BsAvatar(undefined, "User", "John Doe", "", "full"),
+      new BsAvatar(undefined, "User", "J D", "", "full"),
     );
 
     card.setContent(fallbackContainer);

@@ -7,22 +7,23 @@ A self-contained, configurable module providing a responsive sidebar + navbar la
 ## Architecture
 
 ```
-Your Application Entry Point
-└─ AppConfig (configuration object)
-   ├─ MainLayout (sidebar + navbar + content)
-   │  ├─ Sidebar (navigation tree with drill-down, search, collapse)
-   │  │  ├─ BsInput (search bar)
-   │  │  ├─ BsSidebarButton (nav items)
-   │  │  └─ BsSidebarAccount (footer user menu)
-   │  ├─ Navbar (page title, toggle sidebar, actions popup)
-   │  │  ├─ BsButton (toggle/actions triggers)
-   │  │  └─ BsSidebarButton (action menu items)
-   │  ├─ BsDrawer (mobile drawer overlay)
-   │  └─ BsSidebarAccount (mobile top bar account)
-   └─ FullscreenLayout (centered card for auth)
-      ├─ BsInput (username)
-      ├─ BsPassword (password field)
-      └─ BsButton (sign-in submit)
+Your Application Entry Point (~15 lines)
+└─ AppManager (automates layout setup, page map, sidebar)
+   └─ AppConfig (configuration object)
+      ├─ MainLayout (sidebar + navbar + scrollable content)
+      │  ├─ Sidebar (navigation tree with drill-down, search, collapse)
+      │  │  ├─ BsInput (search bar)
+      │  │  ├─ BsSidebarButton (nav items)
+      │  │  └─ BsSidebarAccount (footer user menu)
+      │  ├─ Navbar (page title, toggle sidebar, actions popup)
+      │  │  ├─ BsButton (toggle/actions triggers)
+      │  │  └─ BsSidebarButton (action menu items)
+      │  ├─ BsDrawer (mobile drawer overlay)
+      │  └─ BsSidebarAccount (mobile top bar account)
+      └─ FullscreenLayout (centered card for auth)
+         ├─ BsInput (username)
+         ├─ BsPassword (password field)
+         └─ BsButton (sign-in submit)
 ```
 
 All classes use the AMD global-namespace pattern (no ES imports/exports), compatible with Qooxdoo's single-file build (`outFile`).
@@ -36,6 +37,7 @@ Copy these files from the source project into your target project:
 ### Core Layouts (required)
 | Destination | Source |
 |-------------|--------|
+| `src/layouts/app-manager.ts` | `AppManager` — plug-and-play layout orchestrator |
 | `src/layouts/main.ts` | `MainLayout` — responsive sidebar + navbar + content |
 | `src/layouts/fullscreen-layout.ts` | `FullscreenLayout` — centered card screen |
 | `src/navbar.ts` | `Navbar` — top bar with title, toggle, actions |
@@ -130,7 +132,6 @@ interface AppConfig {
 This is **not** part of the portable module — each project defines its own page registry.
 
 ```typescript
-// Define route tree matching SidebarItem structure
 const ROUTE_DEFINITIONS: RouteDefinition[] = [
   {
     label: "Section",
@@ -141,11 +142,9 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
     ],
   },
 ];
-
-// Helper to build page map + sidebar items
-const pageMap = extractPageMap(ROUTE_DEFINITIONS);
-const sidebarItems = manipulateSidebarItems(createSidebarItems(), pageMap);
 ```
+
+> Note: `AppManager` handles `extractPageMap`, `createSidebarItems`, and `manipulateSidebarItems` internally. You only need to provide `ROUTE_DEFINITIONS`.
 
 ### 3. Create AppConfig
 
@@ -160,51 +159,63 @@ const appConfig: AppConfig = {
     subtitle: "Location",
   },
   callbacks: {
-    onLogout: () => setAppLayout("fullscreen"),
+    onLogout: () => appManager.setLayout("fullscreen"),
     onAbout: () => showMyAboutDialog(),
   },
 };
-
-InlineSvgIcon.iconsBaseUrl = appConfig.resources.iconsBaseUrl;
 ```
 
 ### 4. Wire Layouts in Entry Point
 
+`AppManager` replaces all the boilerplate — just pass config and routes:
+
 ```typescript
 function qooxdooMain(app: qx.application.Standalone) {
-  const root = app.getRoot();
-  type AppLayoutMode = "fullscreen" | "main";
+  const root = <qx.ui.container.Composite>app.getRoot();
 
-  const createMainLayout = () => {
-    const layout = new MainLayout(
-      new MyDashboardPage(),
-      sidebarItems,
-      pageMap,
-      "Dashboard",
-      appConfig,
-    );
-    layout.addListener("logout", () => setAppLayout("fullscreen"));
-    return layout;
-  };
+  const appManager = new AppManager(root, {
+    appName: "My App",
+    appVersion: "1.0.0",
+    user: { name: "Alice", role: "Admin" },
+    login: {
+      title: "Company Name",
+      subtitle: "Location",
+    },
+    callbacks: {
+      onLogout: () => appManager.setLayout("fullscreen"),
+      onAbout: () => showMyAboutDialog(),
+    },
+  }, ROUTE_DEFINITIONS);
 
-  const createFullscreenLayout = () => {
-    const layout = new FullscreenLayout(appConfig);
-    layout.addListener("login", () => setAppLayout("main"));
-    return layout;
-  };
-
-  const setAppLayout = (mode: AppLayoutMode) => {
-    root.removeAll();
-    root.add(mode === "main" ? createMainLayout() : createFullscreenLayout(), {
-      edge: 0,
-    });
-  };
-
-  setAppLayout("main");
+  appManager.start();
 }
+
+qx.registry.registerMainMethod(qooxdooMain);
 ```
 
-### 5. Switch Content Pages at Runtime
+`AppManager` handles everything internally:
+- Sets `InlineSvgIcon.iconsBaseUrl` from config
+- Extracts page map from route definitions
+- Builds and filters sidebar items
+- Creates `MainLayout` with `MainPage` as initial content
+- Creates `FullscreenLayout` on demand
+- Wires login/logout event listeners
+- Exposes `globalThis.appManager` for access from any page
+
+### 5. Access AppManager from Anywhere
+
+`AppManager` is exposed globally after `start()`:
+
+```typescript
+// Any page or component can switch layouts
+(globalThis as any).appManager.setLayout("fullscreen");
+
+// Or typed via declaration:
+declare global { var appManager: AppManager; }
+appManager.setLayout("main");
+```
+
+### 6. Switch Content Pages at Runtime
 
 `MainLayout` exposes a global function `globalThis.setContent(contentOrFactory, title)` to swap the main content area:
 
@@ -247,6 +258,19 @@ The sidebar's `"select"` event automatically calls `setContent` using the page m
 ---
 
 ## Class API Reference
+
+### `AppManager`
+```
+constructor(
+  root: qx.ui.container.Composite,
+  config?: Partial<AppConfig>,
+  routes?: RouteDefinition[]
+)
+
+Methods:
+  setLayout(mode: "main" | "fullscreen")   — toggle between layouts
+  start(initialMode?: "main" | "fullscreen") — init app, exposes globalThis.appManager
+```
 
 ### `Sidebar`
 ```

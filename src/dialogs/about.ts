@@ -1,11 +1,11 @@
 function showAboutDialog(): void {
   const aboutContent = new qx.ui.container.Composite(new qx.ui.layout.VBox(10));
-  aboutContent.setBackgroundColor("transparent");
+  aboutContent.setBackgroundColor(AppColors.background());
 
   const aboutTable = new qx.ui.container.Composite(
     new qx.ui.layout.Grid(8, 14),
   );
-  aboutTable.setBackgroundColor("transparent");
+  aboutTable.setBackgroundColor(AppColors.background());
   const tableLayout = aboutTable.getLayout() as qx.ui.layout.Grid;
   tableLayout.setColumnFlex(1, 1);
 

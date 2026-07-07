@@ -128,8 +128,8 @@ const layout = new MainLayout(content, sidebarItems, pageMap, title, config);
 
 | Interface | File |
 |-----------|------|
-| `AppConfig` | `src/interfaces/AppConfig.ts` |
-| `SidebarItem` | `src/interfaces/sidebar-item.ts` |
+| `AppConfig` | `src/components/AppConfig.ts` |
+| `SidebarItem` | Defined in `src/components/Layout.ts` |
 
 ---
 

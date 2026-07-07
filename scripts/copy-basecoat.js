@@ -131,9 +131,9 @@ function main() {
     const entries = [
       "src/components/ui/**/*.ts",
       "src/components/InlineSvgIcon.ts",
+      "src/components/AppConfig.ts",
       "src/app-colors.ts",
       "src/components/Layout.ts",
-      "src/interfaces/**/*.ts",
       "src/types/custom-components.d.ts",
     ];
     if (!tsconfig.include) tsconfig.include = [];

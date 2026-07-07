@@ -2,9 +2,6 @@ class AppManager {
   private __root: qx.ui.container.Composite;
   private __config: AppConfig;
   private __routes: RouteDefinition[];
-  private __mainLayout: MainLayout | null = null;
-  private __fullscreenLayout: FullscreenLayout | null = null;
-  private __currentMode: "main" | "fullscreen" = "main";
 
   constructor(
     root: qx.ui.container.Composite,
@@ -12,20 +9,8 @@ class AppManager {
     routes?: RouteDefinition[],
   ) {
     this.__root = root;
-    this.__config = {
-      ...DEFAULT_APP_CONFIG,
-      ...config,
-      resources: { ...DEFAULT_APP_CONFIG.resources, ...config?.resources },
-      user: { ...DEFAULT_APP_CONFIG.user, ...config?.user },
-      login: { ...DEFAULT_APP_CONFIG.login, ...config?.login },
-      callbacks: { ...DEFAULT_APP_CONFIG.callbacks, ...config?.callbacks },
-      sidebar: { ...DEFAULT_APP_CONFIG.sidebar, ...config?.sidebar },
-    };
+    this.__config = { ...DEFAULT_APP_CONFIG, ...config };
     this.__routes = routes ?? [];
-    this.__config.resources.logo =
-      this.__config.appLogo ||
-      this.__config.callbacks.onNoLogo?.() ||
-      DEFAULT_APP_CONFIG.resources.logo;
     InlineSvgIcon.iconsBaseUrl = this.__config.resources.iconsBaseUrl;
   }
 
@@ -71,24 +56,13 @@ class AppManager {
   }
 
   setLayout(mode: "main" | "fullscreen"): void {
-    this.__currentMode = mode;
     this.__root.removeAll();
-    if (mode === "main") {
-      this.__mainLayout = this.__createMainLayout();
-      this.__root.add(this.__mainLayout, { edge: 0 });
-    } else {
-      this.__fullscreenLayout = this.__createFullscreenLayout();
-      this.__root.add(this.__fullscreenLayout, { edge: 0 });
-    }
-  }
-
-  setLogo(path: string): void {
-    this.__config.resources.logo = path;
-    if (this.__currentMode === "main" && this.__mainLayout) {
-      this.__mainLayout.setLogo(path);
-    } else if (this.__currentMode === "fullscreen" && this.__fullscreenLayout) {
-      this.__fullscreenLayout.setLogo(path);
-    }
+    this.__root.add(
+      mode === "main"
+        ? this.__createMainLayout()
+        : this.__createFullscreenLayout(),
+      { edge: 0 },
+    );
   }
 
   start(initialMode: "main" | "fullscreen" = "main"): void {
