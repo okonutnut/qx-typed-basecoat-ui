@@ -6,9 +6,8 @@
     "outFile": "lib/application.js",
     "moduleResolution": "node",
     "lib": ["DOM", "ES2015"],
-    "types": [],
-    "ignoreDeprecations": "6.0",
-    "rootDir": "src"
+    "types": []
   },
   "include": ["src/**/*"]
 }
+

@@ -32,6 +32,7 @@ class Navbar extends qx.ui.container.Composite {
     const collapseSidebarBtn = new BsButton("", new InlineSvgIcon("menu", 16), {
       size: "sm-icon",
       variant: "ghost",
+      className: "!w-[50px]"
     });
     collapseSidebarBtn.setWidth(50);
     collapseSidebarBtn.onClick(() => {
@@ -57,6 +58,7 @@ class Navbar extends qx.ui.container.Composite {
     const otherActionsBtn = new BsButton("", new InlineSvgIcon("ellipsis", 8), {
       size: "sm-icon",
       variant: "ghost",
+      className: "!w-[50px]"
     });
     otherActionsBtn.setWidth(50);
     otherActionsBtn.onClick(() => this.__toggleActionsPopup(otherActionsBtn));

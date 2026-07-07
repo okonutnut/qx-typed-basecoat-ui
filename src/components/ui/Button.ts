@@ -144,7 +144,7 @@ class BsButton extends qx.ui.basic.Atom {
 
     this.__htmlButton.setHtml(`
       <center class="p-1 h-full flex items-center justify-center">
-        <button type="button" class="min-w-[120px] ${classes}" ${tabIndexAttr} style="user-select:none">
+        <button type="button" class="w-[120px] ${classes}" ${tabIndexAttr} style="user-select:none">
           ${iconPart}
           ${this.__buttonText}
         </button>

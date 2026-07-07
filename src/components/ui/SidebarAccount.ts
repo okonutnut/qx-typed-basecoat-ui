@@ -25,8 +25,6 @@ class BsSidebarAccount extends qx.ui.basic.Atom {
   private __menuContainer: qx.ui.container.Composite;
   private __menuAnimToken = 0;
   private __resizeObserver: ResizeObserver | null = null;
-  private __cachedContentWidth = 0;
-  private __cachedContentHeight = 0;
 
   constructor(
     name?: string,
@@ -392,10 +390,7 @@ class BsSidebarAccount extends qx.ui.basic.Atom {
     const root = this.__htmlButton.getContentElement().getDomElement();
     if (!root) return;
 
-    this.__resizeObserver = new ResizeObserver(([entry]) => {
-      const target = entry.target as HTMLElement;
-      this.__cachedContentWidth = Math.round(target.scrollWidth || entry.contentRect.width);
-      this.__cachedContentHeight = Math.round(target.scrollHeight || entry.contentRect.height);
+    this.__resizeObserver = new ResizeObserver(() => {
       this.scheduleLayoutUpdate();
     });
     this.__resizeObserver.observe(root);
@@ -403,18 +398,6 @@ class BsSidebarAccount extends qx.ui.basic.Atom {
     this.addListener("disappear", () => {
       this.__resizeObserver?.disconnect();
     });
-  }
-
-  // @ts-ignore
-  _getContentHint(): qx.ui.layout.SizeHint {
-    if (this.__cachedContentWidth > 0 && this.__cachedContentHeight > 0) {
-      return { width: this.__cachedContentWidth, height: this.__cachedContentHeight };
-    }
-    const contentEl = this.__htmlButton.getContentElement()?.getDomElement();
-    if (contentEl) {
-      return { width: contentEl.scrollWidth || 0, height: contentEl.scrollHeight || 0 };
-    }
-    return { width: 0, height: 0 };
   }
 
   private __renderButton(): void {
