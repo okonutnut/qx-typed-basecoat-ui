@@ -1,0 +1,33 @@
+{
+  "name": "basecoat-ui",
+  "version": "1.0.0",
+  "description": "Qooxdoo Basecoat UI — shadcn-style components + layout system for qx-typed projects",
+  "source": [
+    "src/components/ui/*.ts",
+    "src/components/InlineSvgIcon.ts",
+    "src/app-colors.ts",
+    "src/components/Layout.ts",
+    "src/navbar.ts",
+    "src/sidebar.ts",
+    "src/interfaces/AppConfig.ts",
+    "src/interfaces/sidebar-item.ts",
+    "src/types/custom-components.d.ts"
+  ],
+  "assets": [
+    "resource/app/icons/",
+    "resource/app/user.png",
+    "resource/app/app_logo.png"
+  ],
+  "theme": "theme.css",
+  "htmlRequirements": [
+    "<script src=\"https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4\"></script>",
+    "<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css\" />",
+    "<link rel=\"stylesheet\" href=\"theme.css\" />",
+    "<script src=\"https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js\" defer></script>",
+    "<div id=\"toaster\"></div>"
+  ],
+  "consumes": [
+    "qx.* (from resource/qooxdoo.js)",
+    "InlineSvgIcon.iconsBaseUrl must be set at runtime"
+  ]
+}

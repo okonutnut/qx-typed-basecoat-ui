@@ -103,6 +103,11 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
         iconName: "circle",
         element: () => new RadioGroupPage(),
       },
+      {
+        label: "Date Field",
+        iconName: "calendar",
+        element: () => new DateFieldPage(),
+      },
     ],
   },
 ];

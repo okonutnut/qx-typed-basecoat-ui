@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Guidance for OpenCode sessions working in this repository.
+Compact guidance for OpenCode sessions working in this repository.
 
 ---
 
@@ -21,26 +21,24 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 ## Architecture
 
-- **SPA** using Qooxdoo framework + custom Basecoat UI components (shadcn-style)
+- **SPA**: Qooxdoo framework + custom Basecoat UI components (shadcn-style)
 - TypeScript compiles to **single AMD bundle** at `lib/application.js` via `tsconfig.json` (`module: "amd"`, `outFile`)
 - Entry point: `src/application.ts` — registers `qooxdooMain` via `qx.registry.registerMainMethod(qooxdooMain)`
 - Load order: `resource/qooxdoo.js` → `lib/application.js` (RequireJS)
-- **Two layout modes**: `"main"` (sidebar + navbar + content area) and `"fullscreen"` (login/auth screen), toggled by events
+- Two layout modes: `"main"` (sidebar + navbar + content) and `"fullscreen"` (login card), toggled by events, both in `src/components/Layout.ts`
+- `globalThis.setContent(widgetOrFactory, title)` replaces main content area — defined in `MainLayout`
 
 ### Page Routing
 
 - Single source of truth: `ROUTE_DEFINITIONS` in `src/pages/app-pages.ts`
-- Nested tree with top-level groups: "Qooxdoo UI" (native widgets) and "Basecoat UI" (custom `Bs*` components)
-- Labels (human strings) are authoritative keys for navigation, caching, and sidebar matching — **must be kept in sync**
+- Nested tree with top-level groups. Pages created on demand via `element: () => new SomePage()` and cached by label in `pageMap`
 - `manipulateSidebarItems()` drops leaf items with no matching page factory
-- Pages are instantiated on demand via factory `element: () => new SomePage()` and cached by label in `pageMap`
+- Labels are authoritative keys for navigation, caching, and sidebar matching — **must be kept in sync**
 
-### Two-Tier Pages
+### Orphaned Pages
 
-| Group | Page classes | Convention |
-|-------|-------------|------------|
-| Qooxdoo UI | `ButtonsPage`, `ControlPage`, `FormPage`, `ToolBarPage`, `WindowsPage` | `src/pages/buttons.ts`, `control.ts`, etc. |
-| Basecoat UI | `ButtonPage`, `CardPage`, `InputPage`, `SelectPage`, `TextareaPage`, `AvatarPage`, `AlertDialogPage`, `LabelPage`, `ToastPage`, `SliderPage`, `ComboboxPage`, `RadioGroupPage` | `src/pages/*-page.ts` (some omit suffix) |
+- `src/pages/buttons.ts` defines `ButtonsPage` but **no route references it** — both Qooxdoo UI "Buttons" and Basecoat UI "Button" route to `ButtonPage` (from `button-page.ts`)
+- `src/pages/tree.ts` is a standalone function (not a page class) with no route reference
 
 ---
 
@@ -50,27 +48,25 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 - **Classes**: PascalCase (`BsButton`, `AvatarPage`, `MainLayout`)
 - **Private members**: Double underscore prefix (`__responsiveWidth`, `__onResize`)
-- **Constants**: UPPER_SNAKE_CASE (`ROUTE_DEFINITIONS`, `DEFAULT_APP_CONFIG`)
-- **Type aliases**: PascalCase with suffix (`BsButtonVariant`, `SidebarItem`)
 - **Files**: kebab-case (`avatar-page.ts`, `app-pages.ts`)
 - **Basecoat components**: `Bs` prefix (`BsButton`, `BsCard`, `BsInput`)
 
 ### Code Patterns
 
-- **No ES imports/exports** — AMD single outFile means global namespace only (do not write `import`/`export`)
-- **Setters return `this`** for chaining — always return `this` from setter methods
-- **Static events**: `static events = { execute: "qx.event.type.Event" }` followed by convenience methods like `onClick(fn): this`
-- **Inline HTML rendering**: Most Basecoat UI components render native HTML via `qx.ui.embed.Html` to apply Tailwind CSS classes directly
-- **`// @ts-ignore`** needed above `new qx.bom.Font(...)` due to incomplete Qooxdoo type declarations in `src/qooxdoo.d.ts`
-- **Widget composition**: Extend `qx.ui.basic.Atom` (label+icon) or `qx.ui.container.Composite` (container with layout)
+- **No ES imports/exports** — AMD single outFile means global namespace only
+- **Setters return `this`** for chaining
+- **Static events**: `static events = { execute: "qx.event.type.Event" }`, then convenience methods like `onClick(fn): this`
+- **`// @ts-ignore` is needed extensively** (36+ occurrences) for Qooxdoo API calls due to incomplete type declarations in `src/qooxdoo.d.ts`
+- **Widget composition**: Extend `qx.ui.basic.Atom` (label+icon) or `qx.ui.container.Composite`
 - **`_setLayout`** (protected) when extending `Atom`; **`setLayout`** (public) when extending `Composite`
-- **ResizeObserver** pattern used in most input/control widgets for layout sync
+- **ResizeObserver** pattern used in input/control widgets for layout sync
 
 ### Basecoat UI specifics
 
-- `BsToast` is a **static class** — call `BsToast.show(...)` or convenience methods like `BsToast.info(...)`
+- `BsToast` is a **static class** — requires `<div id="toaster"></div>` in DOM (present in `index.html`) for mount target
 - `BsAlertDialog` is a **singleton static class** — call `BsAlertDialog.show(config)`
-- API reference available at `src/basecoatui.api.md`
+- API reference: `src/basecoatui.api.md` (381 lines, covers all 18 component files in `src/components/ui/`)
+- Type declarations for Basecoat widgets: `src/types/custom-components.d.ts`
 
 ### Layout & Styling
 
@@ -88,19 +84,17 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 ## Adding a New Page
 
-1. Create `src/pages/my-page.ts` extending `qx.ui.container.Composite` (class name: `MyPage`)
+1. Create `src/pages/my-page.ts` extending `qx.ui.container.Composite` (class name `MyPage`)
 2. Add to `ROUTE_DEFINITIONS` in `src/pages/app-pages.ts`:
    ```typescript
    { label: "My Page", iconName: "icon-name", element: () => new MyPage() }
    ```
-3. Add matching child under appropriate parent in the nested tree
+3. Add matching child under the appropriate parent in the nested tree
 4. Label must match **exactly** between route definition and sidebar (trimmed, case-sensitive)
 
 ---
 
 ## OpenCode Skills
-
-Two skills are already installed and should be consulted via `skill` tool:
 
 | Skill | When to use |
 |-------|-------------|
@@ -115,16 +109,28 @@ Two skills are already installed and should be consulted via `skill` tool:
 |------|---------|
 | `src/pages/app-pages.ts` | `ROUTE_DEFINITIONS`, `createSidebarItems()`, `manipulateSidebarItems()` |
 | `src/application.ts` | App entry point, layout switching, page map extraction |
+| `src/components/Layout.ts` | `MainLayout` + `FullscreenLayout` |
 | `src/qooxdoo.d.ts` | ~15k-line Qooxdoo TypeScript declarations |
-| `src/basecoatui.api.md` | Basecoat UI component API reference (constructors, methods, events) |
-| `src/components/ui/` | Basecoat UI components (BsButton, BsCard, BsInput, etc.) |
-| `src/interfaces/AppConfig.ts` | `AppConfig` interface and `DEFAULT_APP_CONFIG` |
-| `src/interfaces/sidebar-item.ts` | `SidebarItem` interface |
-| `src/app-colors.ts` | Runtime CSS variable resolution for theming |
-| `src/sidebar.ts` | Sidebar navigation widget (search, drill-down, collapse, drawer mode) |
-| `src/components/Layout.ts` | `MainLayout` (sidebar, navbar, content, responsive drawer) and `FullscreenLayout` (login/auth card) |
-| `src/navbar.ts` | Navbar with page title and actions popup |
-| `src/components/InlineSvgIcon.ts` | Inline SVG icon fetcher |
-| `src/dialogs/about.ts` | About dialog |
-| `theme.css` | CSS custom properties (oklch), light/dark theme, Tailwind mappings |
+| `src/basecoatui.api.md` | Basecoat UI component API reference |
+| `src/types/custom-components.d.ts` | Basecoat UI widget type declarations |
+| `src/components/ui/` | All 18 Basecoat UI component sources |
+| `theme.css` | CSS custom properties, light/dark theme, Tailwind overrides |
 | `tsconfig.json` | AMD module, ES6 target, single `outFile` |
+| `basecoat-manifest.json` | File manifest consumed by `scripts/copy-basecoat.js` |
+| `scripts/copy-basecoat.js` | Copies Basecoat UI to another qx-typed project |
+| `BASEACOT-INTEGRATION.md` | Integration guide for consuming projects |
+
+---
+
+## Distribution
+
+Basecoat UI is distributed as a copy-build module for in-house qx-typed projects.
+
+| Command | What it does |
+|---------|-------------|
+| `node scripts/copy-basecoat.js <path>` | Copies all source, theme, icons, and assets to target project |
+| Then `npx tsc` in target project | Compiles everything into one bundle |
+
+**Source of truth**: `basecoat-manifest.json` lists every file, asset, and HTML requirement. The copy script reads this manifest; keep it in sync when adding/removing components.
+
+**Updating consumers**: Re-run `node scripts/copy-basecoat.js <path>` after Basecoat changes. The script overwrites existing files and patches `tsconfig.json`.
