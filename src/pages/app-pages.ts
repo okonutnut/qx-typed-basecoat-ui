@@ -94,6 +94,11 @@ const ROUTE_DEFINITIONS: RouteDefinition[] = [
         element: () => new SliderPage(),
       },
       {
+        label: "Switch",
+        iconName: "toggle-right",
+        element: () => new SwitchPage(),
+      },
+      {
         label: "Combobox",
         iconName: "search",
         element: () => new ComboboxPage(),

@@ -28,10 +28,10 @@ class CardPage extends qx.ui.container.Composite {
     const card = new BsCard();
     card.setMaxWidth(this.__isMobile() ? this.__responsiveWidth - 40 : 520);
 
-    const emailInput = new qx.ui.form.TextField();
+    const emailInput = new BsInput();
     emailInput.setPlaceholder("Email");
 
-    const passwordInput = new qx.ui.form.PasswordField();
+    const passwordInput = new BsPassword();
     passwordInput.setPlaceholder("Password");
 
     const formContent = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));

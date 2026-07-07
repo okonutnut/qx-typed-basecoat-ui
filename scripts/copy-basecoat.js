@@ -133,8 +133,6 @@ function main() {
       "src/components/InlineSvgIcon.ts",
       "src/app-colors.ts",
       "src/components/Layout.ts",
-      "src/navbar.ts",
-      "src/sidebar.ts",
       "src/interfaces/**/*.ts",
       "src/types/custom-components.d.ts",
     ];

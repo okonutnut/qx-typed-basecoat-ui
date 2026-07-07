@@ -29,7 +29,8 @@ class InputPage extends qx.ui.container.Composite {
     const card = new BsCard();
     card.setMaxWidth(this.__isMobile() ? this.__responsiveWidth - 40 : 520);
 
-    const input = new BsInput("", "Enter your text...");
+    const input = new BsInput();
+    input.setPlaceholder("Enter your text...");
     input.setWidth(this.__isMobile() ? this.__responsiveWidth - 88 : 472);
 
     const container = new qx.ui.container.Composite(new qx.ui.layout.VBox(8));
