@@ -29,7 +29,7 @@ Reference `src/qooxdoo.d.ts` for type definitions when writing Qooxdoo code.
 src/
   application.ts          # Entry point, exports qooxdooMain
   pages/
-    app-pages.ts          # PAGE_DEFINITIONS & SIDEBAR_DEFINITIONS
+    AppPages.ts           # AppPages class (ROUTE_DEFINITIONS, createSidebarItems, manipulateSidebarItems)
     *-page.ts             # Individual page components
   components/ui/          # BasecoatUI components (BsButton, BsCard, etc.)
   layouts/                # Main and login layouts
@@ -103,21 +103,13 @@ class MyPage extends qx.ui.container.Composite {
 }
 ```
 
-2. Register in `src/pages/app-pages.ts`:
+2. Register in `src/components/AppPages.ts`:
 ```typescript
-const PAGE_DEFINITIONS: PageDefinition[] = [
-  { label: "My Page", iconName: "icon-name", element: () => new MyPage() },
-];
-
-const SIDEBAR_DEFINITIONS: SidebarDefinition[] = [
-  {
-    label: "Section",
-    iconName: "folder",
-    children: [
-      { label: "My Page", iconName: "icon-name" },
-    ],
-  },
-];
+AppPages.ROUTE_DEFINITIONS.push({
+  label: "My Page",
+  iconName: "icon-name",
+  element: () => new MyPage(),
+});
 ```
 
 **Important:** Sidebar label must exactly match the page label.

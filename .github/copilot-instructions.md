@@ -25,9 +25,9 @@ Notes:
 - TypeScript source is under `src/` and compiled into a single bundle at `lib/application.js` (tsc outFile). `index.html` loads Qooxdoo (`resource/qooxdoo.js`) and then `lib/application.js`.
 - Entry point: `src/application.ts` exports the qooxdoo main method (`qooxdooMain`) which is registered with `qx.registry.registerMainMethod`.
 - Pages & navigation:
-  - `src/pages/app-pages.ts` contains `PAGE_DEFINITIONS` and `SIDEBAR_DEFINITIONS` which define available pages and sidebar structure.
+  - `src/components/AppPages.ts` contains `AppPages.ROUTE_DEFINITIONS` which define available pages and sidebar structure.
   - Each page is produced by a factory (e.g., `() => new ButtonsPage()`) so pages are instantiated on demand and cached by label.
-  - Labels in `PAGE_DEFINITIONS` are used as keys in the `pageMap` and must match sidebar labels for navigation to work.
+  - Labels in `AppPages.ROUTE_DEFINITIONS` are used as keys in the `pageMap` and must match sidebar labels for navigation to work.
 - Layouts & shell:
   - `src/layouts/main.ts` implements `MainLayout` which composes the sidebar, navbar, and main content region and handles responsive/mobile drawer behavior.
   - `src/layouts/login.ts` implements the login layout used when authentication is active.
@@ -40,9 +40,9 @@ Notes:
 
 ## Key conventions and patterns
 
-- Page factory pattern: `PAGE_DEFINITIONS` exposes pages as zero-argument factories returning a `qx.ui.core.Widget`. The registry and caching expect factories rather than single shared instances.
+- Page factory pattern: `AppPages.ROUTE_DEFINITIONS` exposes pages as zero-argument factories returning a `qx.ui.core.Widget`. The registry and caching expect factories rather than single shared instances.
 - Label-as-key: Page labels (human strings) are the authoritative keys for navigation and caching. Keep labels stable when renaming pages or update all references.
-- Sidebar normalization: `manipulateSidebarItems` in `app-pages.ts` filters/normalizes sidebar items and will drop leaf items that don't have a corresponding page factory. Keep sidebar definitions in sync with `PAGE_DEFINITIONS`.
+- Sidebar normalization: `AppPages.manipulateSidebarItems` in `src/components/AppPages.ts` filters/normalizes sidebar items and will drop leaf items that don't have a corresponding page factory. Keep sidebar definitions in sync with `AppPages.ROUTE_DEFINITIONS`.
 - Global content setter: `globalThis.setContent(contentOrFactory, title)` is used by the layout to replace main content; callers may pass either a widget or a factory.
 - Component naming: UI components follow folder/class conventions: `components/ui/*` contain shared widgets; pages are named `*Page` and extend Qooxdoo widgets (e.g., `MainPage extends qx.ui.container.Composite`).
 - Event pattern: Layouts and components often declare `static events = { ... }` and expose higher-level callbacks (e.g., `.onAction`) — follow existing patterns when adding new components.
@@ -59,8 +59,8 @@ Notes:
 ## Quick checklist for Copilot sessions
 
 - Look at `tsconfig.json` for module/outFile settings before suggesting build changes.
-- Use `src/application.ts` and `src/pages/app-pages.ts` to understand navigation & page factories.
-- When suggesting new pages, add a factory to `PAGE_DEFINITIONS` and a corresponding sidebar entry; ensure label strings match.
+- Use `src/application.ts` and `src/components/AppPages.ts` to understand navigation & page factories.
+- When suggesting new pages, add a factory to `AppPages.ROUTE_DEFINITIONS` and a corresponding sidebar entry; ensure label strings match.
 - Keep the `lib/application.js` artifact in mind: changes to `tsconfig.json` or the build step affect what `index.html` loads.
 
 ---

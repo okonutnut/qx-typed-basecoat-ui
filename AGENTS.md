@@ -30,7 +30,7 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 ### Page Routing
 
-- Single source of truth: `ROUTE_DEFINITIONS` in `src/pages/app-pages.ts`
+- Single source of truth: `AppPages.ROUTE_DEFINITIONS` in `src/components/AppPages.ts`
 - Nested tree with top-level groups. Pages created on demand via `element: () => new SomePage()` and cached by label in `pageMap`
 - `manipulateSidebarItems()` drops leaf items with no matching page factory
 - Labels are authoritative keys for navigation, caching, and sidebar matching — **must be kept in sync**
@@ -48,7 +48,7 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 - **Classes**: PascalCase (`BsButton`, `AvatarPage`, `MainLayout`)
 - **Private members**: Double underscore prefix (`__responsiveWidth`, `__onResize`)
-- **Files**: kebab-case (`avatar-page.ts`, `app-pages.ts`)
+- **Files**: kebab-case (`avatar-page.ts`, `button-page.ts`)
 - **Basecoat components**: `Bs` prefix (`BsButton`, `BsCard`, `BsInput`)
 
 ### Code Patterns
@@ -84,8 +84,8 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 ## Adding a New Page
 
-1. Create `src/pages/my-page.ts` extending `qx.ui.container.Composite` (class name `MyPage`)
-2. Add to `ROUTE_DEFINITIONS` in `src/pages/app-pages.ts`:
+1. Create `src/pages/my-page.ts` extending `BasePage` (class name `MyPage`)
+2. Add to `ROUTE_DEFINITIONS` in `src/components/AppPages.ts`:
    ```typescript
    { label: "My Page", iconName: "icon-name", element: () => new MyPage() }
    ```
@@ -107,7 +107,7 @@ No lint, test, or typecheck commands exist. Only compile step.
 
 | File | Purpose |
 |------|---------|
-| `src/pages/app-pages.ts` | `ROUTE_DEFINITIONS`, `createSidebarItems()`, `manipulateSidebarItems()` |
+| `src/components/AppPages.ts` | `AppPages.ROUTE_DEFINITIONS`, `AppPages.createSidebarItems()`, `AppPages.manipulateSidebarItems()` |
 | `src/application.ts` | App entry point, layout switching, page map extraction |
 | `src/components/Layout.ts` | `MainLayout` + `FullscreenLayout` |
 | `src/qooxdoo.d.ts` | ~15k-line Qooxdoo TypeScript declarations |
