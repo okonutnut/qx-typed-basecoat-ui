@@ -1,24 +1,12 @@
-class AvatarPage extends qx.ui.container.Composite {
-  private __responsiveWidth = 0;
-
+class AvatarPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     this.setPadding(20);
 
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
     this.add(this.createShapesSection());
     this.add(this.createFallbackSection());
     this.add(this.createSizesSection());
-
-    qx.event.Registration.addListener(window, "resize", this.__onResize, this);
-  }
-
-  private __onResize(): void {
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
-  }
-
-  private __isMobile(): boolean {
-    return this.__responsiveWidth < 768;
   }
 
   private createShapesSection(): qx.ui.core.Widget {

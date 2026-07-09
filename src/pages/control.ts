@@ -1,8 +1,9 @@
-class ControlPage extends qx.ui.container.Composite {
+class ControlPage extends BasePage {
   private vbox = new qx.ui.container.Composite(new qx.ui.layout.VBox(20));
 
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     this.add(this.vbox, { top: 0 });
     this.initWidgets();
   }

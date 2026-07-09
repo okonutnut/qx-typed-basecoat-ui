@@ -1,6 +1,7 @@
-class WindowsPage extends qx.ui.container.Composite {
+class WindowsPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     const desktop = new qx.ui.window.Desktop();
     for (let n = 1; n <= 5; n++) {
       const win = new qx.ui.window.Window("Window " + n);

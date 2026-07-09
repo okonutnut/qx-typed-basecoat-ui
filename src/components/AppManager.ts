@@ -43,8 +43,8 @@ class AppManager {
 
   private __createMainLayout(): MainLayout {
     const pageMap = this.__extractPageMap();
-    const sidebarItems = manipulateSidebarItems(
-      createSidebarItems(this.__routes),
+    const sidebarItems = AppPages.manipulateSidebarItems(
+      AppPages.createSidebarItems(this.__routes),
       pageMap,
     );
     const initialPage = new MainPage();

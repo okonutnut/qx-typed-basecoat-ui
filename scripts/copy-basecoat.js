@@ -132,6 +132,8 @@ function main() {
       "src/components/ui/**/*.ts",
       "src/components/InlineSvgIcon.ts",
       "src/components/AppConfig.ts",
+      "src/components/BasePage.ts",
+      "src/components/AppPages.ts",
       "src/app-colors.ts",
       "src/components/Layout.ts",
       "src/types/custom-components.d.ts",

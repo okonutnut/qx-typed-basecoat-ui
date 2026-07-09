@@ -1,6 +1,7 @@
-class ToolBarPage extends qx.ui.container.Composite {
+class ToolBarPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     this.add(this.getToolBar());
   }
 

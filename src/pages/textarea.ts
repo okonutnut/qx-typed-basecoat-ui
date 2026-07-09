@@ -1,26 +1,11 @@
-class TextareaPage extends qx.ui.container.Composite {
-  private __responsiveWidth = 0;
-
+class TextareaPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     this.setPadding(20);
 
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
     this.add(this.createBasicTextarea());
     this.add(this.createTextareaWithLabel());
-
-    qx.event.Registration.addListener(window, "resize", this.__onResize, this);
-  }
-
-  private __onResize(): void {
-    const newWidth = qx.bom.Viewport.getWidth();
-    if (newWidth !== this.__responsiveWidth) {
-      this.__responsiveWidth = newWidth;
-    }
-  }
-
-  private __isMobile(): boolean {
-    return this.__responsiveWidth < 768;
   }
 
   private createBasicTextarea(): qx.ui.core.Widget {

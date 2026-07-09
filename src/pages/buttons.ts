@@ -1,6 +1,7 @@
-class ButtonsPage extends qx.ui.container.Composite {
+class ButtonsPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(10));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(10));
     const button1 = new qx.ui.form.Button(
       "Hello",
       "resource/app/internet-web-browser.png",

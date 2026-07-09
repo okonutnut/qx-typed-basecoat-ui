@@ -1,4 +1,4 @@
-class MainPage extends qx.ui.container.Composite {
+class MainPage extends BasePage {
   constructor() {
     super();
     this.setLayout(new qx.ui.layout.Grow());

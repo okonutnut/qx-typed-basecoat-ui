@@ -13,7 +13,7 @@ function qooxdooMain(app: qx.application.Standalone) {
       onLogout: () => appManager.setLayout("fullscreen"),
       onAbout: () => showAboutDialog(),
     },
-  }, ROUTE_DEFINITIONS);
+  }, AppPages.ROUTE_DEFINITIONS);
 
   appManager.start();
 }

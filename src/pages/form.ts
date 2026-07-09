@@ -1,6 +1,7 @@
-class FormPage extends qx.ui.container.Composite {
+class FormPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
 
     const form = new qx.ui.form.Form();
     this.addSection1(form);

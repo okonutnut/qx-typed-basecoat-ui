@@ -1,24 +1,12 @@
-class LabelPage extends qx.ui.container.Composite {
-  private __responsiveWidth = 0;
-
+class LabelPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     this.setPadding(20);
 
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
     this.add(this.createBasicSection());
     this.add(this.createWithInputSection());
     this.add(this.createDisabledSection());
-
-    qx.event.Registration.addListener(window, "resize", this.__onResize, this);
-  }
-
-  private __onResize(): void {
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
-  }
-
-  private __isMobile(): boolean {
-    return this.__responsiveWidth < 768;
   }
 
   private createBasicSection(): qx.ui.core.Widget {

@@ -1,24 +1,12 @@
-class RadioGroupPage extends qx.ui.container.Composite {
-  private __responsiveWidth = 0;
-
+class RadioGroupPage extends BasePage {
   constructor() {
-    super(new qx.ui.layout.VBox(20));
+    super();
+    this.setLayout(new qx.ui.layout.VBox(20));
     this.setPadding(20);
 
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
     this.add(this.createDefaultSection());
     this.add(this.createFormSection());
     this.add(this.createDisabledSection());
-
-    qx.event.Registration.addListener(window, "resize", this.__onResize, this);
-  }
-
-  private __onResize(): void {
-    this.__responsiveWidth = qx.bom.Viewport.getWidth();
-  }
-
-  private __isMobile(): boolean {
-    return this.__responsiveWidth < 768;
   }
 
   private createDefaultSection(): qx.ui.core.Widget {
