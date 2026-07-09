@@ -40,6 +40,7 @@ Copy these files from the source project into your target project:
 | `src/config/app-manager.ts` | `AppManager` — plug-and-play layout orchestrator |
 | `src/config/app-pages.ts` | `AppPages` — route definitions, sidebar item helpers |
 | `src/config/base-page.ts` | `BasePage` — page base class with responsive support |
+| `src/config/main-page.ts` | `MainPage` — built-in default startup/welcome page (can be overridden) |
 | `src/config/app-config.ts` | `AppConfig` — configuration interface + defaults |
 | `src/layouts/main.ts` | `MainLayout` — responsive sidebar + navbar + content |
 | `src/layouts/fullscreen-layout.ts` | `FullscreenLayout` — centered card screen |
@@ -131,7 +132,7 @@ interface AppConfig {
 
 ### 2. Define Pages & Routes (project-specific)
 
-This is **not** part of the portable module — each project defines its own page registry.
+The default startup page (`MainPage`) is **built-in** — it displays the app name, version, and user name from `AppConfig`. Each project can optionally override it by defining its own `class MainPage` anywhere in the source tree (AMD global namespace means your definition takes precedence).
 
 ```typescript
 const ROUTE_DEFINITIONS: RouteDefinition[] = [
@@ -204,6 +205,8 @@ qx.registry.registerMainMethod(qooxdooMain);
 - Wires login/logout event listeners
 - Exposes `globalThis.appManager` for access from any page
 
+> **Note**: `MainPage` is **built-in** and reads `AppConfig` to display the app name, version, and user name. To create a custom startup page, simply define `class MainPage` in your own source tree — it will silently override the default (AMD global namespace).
+
 ### 5. Access AppManager from Anywhere
 
 `AppManager` is exposed globally after `start()`:
@@ -245,6 +248,13 @@ The sidebar's `"select"` event automatically calls `setContent` using the page m
 - Centered card with logo, title, subtitle, username/password inputs, and submit button
 - Fires `"login"` event on submit (Enter key also triggers within the card)
 - Exposes `loginError` label for inline error messages
+
+### MainPage (built-in default)
+- Extends `BasePage` with a centered welcome card
+- Displays user name, app name, and version from `AppConfig`
+- Falls back to generic text when config values are empty
+- Responsive width adapts to viewport
+- **Override**: define your own `class MainPage` anywhere in the project to replace it
 
 ### MainLayout
 - Responsive: automatically switches between desktop (sidebar + content) and mobile (drawer) at 768px breakpoint

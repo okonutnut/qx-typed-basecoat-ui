@@ -47,7 +47,7 @@ class AppManager {
       AppPages.createSidebarItems(this.__routes),
       pageMap,
     );
-    const initialPage = new MainPage();
+    const initialPage = new MainPage(this.__config);
 
     const mainLayout = new MainLayout(
       initialPage,
