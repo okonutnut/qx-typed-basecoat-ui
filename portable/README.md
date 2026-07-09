@@ -37,7 +37,10 @@ Copy these files from the source project into your target project:
 ### Core Layouts (required)
 | Destination | Source |
 |-------------|--------|
-| `src/layouts/app-manager.ts` | `AppManager` — plug-and-play layout orchestrator |
+| `src/config/app-manager.ts` | `AppManager` — plug-and-play layout orchestrator |
+| `src/config/app-pages.ts` | `AppPages` — route definitions, sidebar item helpers |
+| `src/config/base-page.ts` | `BasePage` — page base class with responsive support |
+| `src/config/app-config.ts` | `AppConfig` — configuration interface + defaults |
 | `src/layouts/main.ts` | `MainLayout` — responsive sidebar + navbar + content |
 | `src/layouts/fullscreen-layout.ts` | `FullscreenLayout` — centered card screen |
 | `src/navbar.ts` | `Navbar` — top bar with title, toggle, actions |
@@ -50,7 +53,6 @@ See `components/ui/README.md` for the full list of Bs* widgets.
 | File | Purpose |
 |------|---------|
 | `src/interfaces/sidebar-item.ts` | `SidebarItem` type used by sidebar |
-| `src/interfaces/AppConfig.ts` | `AppConfig` interface + `DEFAULT_APP_CONFIG` |
 | `src/app-colors.ts` | `AppColors` — runtime CSS variable resolution |
 | `components/InlineSvgIcon.ts` | Async SVG icon fetcher |
 
